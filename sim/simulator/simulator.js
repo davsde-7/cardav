@@ -1,1 +1,3 @@
-	// This will be a simulator
+// This will be a simulator
+const gaussian = require('gaussian');
+
