@@ -1,0 +1,7 @@
+{
+    "mean_anually" : 5,
+    "stdev_anually" : 2.5,
+    "stdev_daily" : 1.0,
+    "stdev_hourly" : 0.25,
+    "start_date" : "December 31, 2021 17:00:00"
+}
