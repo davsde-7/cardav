@@ -17,7 +17,7 @@ class Prosumer {
     updateProduction(production) {
         //calculate production based on the wind turbine and battery?
         //the production should be used to supply the prosumers own demand on electricity first before selling to the market
-        this.setNetProduction();
+        this.updateNetProduction();
     }
 
     updateConsumption(consumption) {
