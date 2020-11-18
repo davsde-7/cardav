@@ -10,23 +10,17 @@ class Manager {
         this.electricityPriceModel = electricityPriceModel; //the manager can use the electricity price model provided by the electric company as a giude
     }
 
-    cupdateMarketPrice(newPrice) {
+    updateMarketPrice(newPrice) {
         //use the electricitypricemodel if needed and do checks on the wind, market, powerplant, prosumers etc before setting the price.
         //the manager can redirect the prosumers to sell to the market by momentarily increasing the market price
         this.market.updateMarketPrice(newPrice);
     }
 
-    turnOffPowerPlant() {
-        this.powerPlant.powerPlantOn = false;
+    togglePowerPlant() {
+        this.powerPlant.setPowerPlantStatus(this.powerPlant.powerPlantOn ? false : true);
     }
-
-    turnOnPowerPlant() {
-        this.powerPlant.powerPlantOn = true;
-    }
-
-
-
 }
+
  //move to separate file?
 class Market {
     constructor(manager, prosumers, consumers) {
@@ -85,4 +79,7 @@ class PowerPlant {
         //increase or decrease the capacity of the powerplants bufferbattery based on the consumers and prosumers usage
         this.bufferBattery.setCapacity(capacity);
     }
+    
+    setPowerPlantStatus(status) {
+        this.powerPlantOn = status;
 }
