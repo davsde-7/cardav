@@ -1,0 +1,75 @@
+extends layout
+
+block content
+    div.mt-6
+        h5 Welcome, username! [manager]
+        h7 Here is the current data fetched 2020-11-16 at 15:16:00.
+        br
+        h7 There is no current blackout/There is a blackout affecting the following households: listlist
+        br
+        br
+        h7 #[strong Coal power plant status]
+        br
+        h7 Production: #[strong 355]
+        br
+        h7 Production market/buffer ratio: #[strong 50/50]
+        br
+        h7 Status (started/running/stopped): #[strong Running]
+        br
+        br
+        h7 Market demand: #[strong Very much]
+        br
+        h7 Modelled electricity price: #[strong 123]
+        br
+        h7 Electricity price: #[strong 1234]
+        br
+        br
+        h7 #[strong Handle production]
+        br
+        label(for='prodMarketInput') Production to market: 
+        input#prodMarketInput(type='range' min='0' max='100' value='50' step='1' onchange='prodMarketChange()')
+        output#prodMarket 50
+        br
+        label(for='prodBufferInput') Production to buffer: 
+        input#prodBufferInput(type='range' min='0' max='100' value='50' step='1' onchange='prodBufferChange()')
+        output#prodBuffer 50
+        br
+        br
+        .col-sm-8(style="padding-left: 0")
+          button#view.btn.btn-primary(name='production' onclick="location.href='/dashboard_manager'") Update production!
+        br
+        h7 #[strong Set electricity price]
+        br
+        br
+        .col-md-3.mx-left(style="padding-left: 0")
+            .form-group.col-lg-8(style="padding-left: 0")
+                input.form-control(type='number' name='price' id='price' value='' placeholder='01234' min='1')
+        .col-sm-8(style="padding-left: 0")
+          button#view.btn.btn-primary(name='price' onclick="location.href='/dashboard_manager'") Update price!
+        br
+        h7 #[strong Update coal power plant status]
+        br
+        h7 (If stopped this button is visible)
+        .col-sm-8(style="padding-left: 0")
+            button#view.btn.btn-primary(name='start' onclick="location.href='/dashboard_manager'") Start power plant
+        h7 (If started this button is visible)
+        .col-sm-8(style="padding-left: 0")
+            button#view.btn.btn-primary(name='stop' onclick="location.href='/dashboard_manager'") Stop
+        br
+        br
+        script.
+          function prodMarketChange() {
+          var x = document.getElementById("prodMarketInput").value;
+          document.getElementById("prodBufferInput").value = 100-x;
+          var y = document.getElementById("prodBufferInput").value;
+          document.getElementById("prodMarket").innerHTML = x;
+          document.getElementById("prodBuffer").innerHTML = y;
+          }
+          function prodBufferChange() {
+          var x = document.getElementById("prodBufferInput").value;
+          document.getElementById("prodMarketInput").value = 100-x;
+          var y = document.getElementById("prodMarketInput").value;
+          document.getElementById("prodMarket").innerHTML = y;
+          document.getElementById("prodBuffer").innerHTML = x;
+          }
+

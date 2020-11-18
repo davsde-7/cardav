@@ -8,13 +8,16 @@ const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const registerRouter = require('./routes/register')
 const loginRouter = require('./routes/login')
+const dashboardProsumerRouter = require('./routes/dashboard_prosumer')
+const dashBoardManagerRouter = require('./routes/dashboard_manager')
+const profilePageRouter = require('./routes/profile_page');
 
 const app = express();
 
 
 // Database setup
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/m7011e', {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect('mongodb://localhost/m7011e', {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex:true});
 let db = mongoose.connection
 db.on('error', (error) => console.error(error));
 db.once('open', () => console.log("Connected to database"));
@@ -33,6 +36,9 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/register', registerRouter);
 app.use('/login', loginRouter);
+app.use('/dashboard_prosumer', dashboardProsumerRouter);
+app.use('/dashboard_manager', dashBoardManagerRouter);
+app.use('/profile_page', profilePageRouter);
 
 
 

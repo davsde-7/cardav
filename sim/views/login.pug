@@ -1,6 +1,23 @@
 extends layout
 
 block content
-  h1 LOGIN PAGE
+  div.mt-6
+    section.container
+      .container-page
+        .col-md-6.mx-auto
+          h3.dark-grey Login
+          .form-group.col-lg-8
+            label Username
+            input.form-control(type='' name='username' id='username' value='' placeholder='Username')
+          .form-group.col-lg-8
+            label Password
+            input.form-control(type='password' name='password' id='password' value='' placeholder='Password')
+          .col-sm-8
+          center 
+          button.btn.btn-primary(type='submit') Login
+          br
+          br
+          h6 Not a user yet? 
+          a(href="http://130.240.200.34:3000/register") Register here!
   
   

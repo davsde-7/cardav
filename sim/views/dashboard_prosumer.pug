@@ -1,0 +1,85 @@
+extends layout
+
+block content
+    div.mt-6
+        h5 Welcome, username!
+        h7 Here is the current data fetched 2020-11-16 at 15:16:00.
+        br
+        br
+        h7 Wind: #[strong 245346]
+        br
+        h7 Production: #[strong 355]
+        br
+        h7 Consumption: #[strong 123]
+        br
+        h7 Net production: #[strong 232]
+        br
+        h7 Capacity in the buffer: #[strong 100%]
+        br
+        h7 Electricity price on the market: #[strong very expensive]
+        br
+        h7 Net production market/buffer ratio: #[strong 50/50]
+        br
+        h7 Under-production market/buffer ratio: #[strong 50/50]
+        br
+        br
+        div.form-control-range
+          h7 #[strong Handle net production]
+          br
+          label(for='netProdMarketInput') Net production to market: 
+          input#netProdMarketInput(type='range' min='0' max='100' value='50' step='1' onchange='netProdMarketChange()')
+          output#netProdMarket 50
+          br
+          label(for='netProdBufferInput') Net production to buffer: 
+          input#netProdBufferInput(type='range' min='0' max='100' value='50' step='1' onchange='netProdBufferChange()')
+          output#netProdBuffer 50
+          br
+          br
+          .col-sm-8(style="padding-left: 0")
+            button#view.btn.btn-primary(name='netProduction' onclick="location.href='/dashboard_prosumer'") Update net production!
+          br
+        div.form-control-range
+          h7 #[strong Handle under-production]
+          br
+          label(for='buyFromMarketInput') Buy from market: 
+          input#buyFromMarketInput(type='range' min='0' max='100' value='50' step='1' onchange='buyFromMarketChange()')
+          output#buyFromMarket 50
+          br
+          label(for='takeFromBufferInput') Take from buffer: 
+          input#takeFromBufferInput(type='range' min='0' max='100' value='50' step='1' onchange='takeFromBufferChange()')
+          output#takeFromBuffer 50
+          br
+          br
+          .col-sm-8(style="padding-left: 0")
+            button#view.btn.btn-primary(name='underProduction' onclick="location.href='/dashboard_prosumer'") Update under-production!
+          br
+        h7 A simulator tab and a review your information tab (+upload picture) to be added to the navbar
+        script.
+          function netProdMarketChange() {
+          var x = document.getElementById("netProdMarketInput").value;
+          document.getElementById("netProdBufferInput").value = 100-x;
+          var y = document.getElementById("netProdBufferInput").value;
+          document.getElementById("netProdMarket").innerHTML = x;
+          document.getElementById("netProdBuffer").innerHTML = y;
+          }
+          function netProdBufferChange() {
+          var x = document.getElementById("netProdBufferInput").value;
+          document.getElementById("netProdMarketInput").value = 100-x;
+          var y = document.getElementById("netProdMarketInput").value;
+          document.getElementById("netProdMarket").innerHTML = y;
+          document.getElementById("netProdBuffer").innerHTML = x;
+          }
+          function buyFromMarketChange() {
+          var x = document.getElementById("buyFromMarketInput").value;
+          document.getElementById("takeFromBufferInput").value = 100-x;
+          var y = document.getElementById("takeFromBufferInput").value;
+          document.getElementById("buyFromMarket").innerHTML = x;
+          document.getElementById("takeFromBuffer").innerHTML = y;
+          }
+          function takeFromBufferChange() {
+          var x = document.getElementById("takeFromBufferInput").value;
+          document.getElementById("buyFromMarketInput").value = 100-x;
+          var y = document.getElementById("buyFromMarketInput").value;
+          document.getElementById("buyFromMarket").innerHTML = y;
+          document.getElementById("takeFromBuffer").innerHTML = x;
+          }

@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
+const bcryptjs = require('bcryptjs');
 
 // Schema for users
 let userSchema = mongoose.Schema({
-    userName:{
+    username:{
         type: String,
         required: true,
         unique: true
@@ -26,13 +27,13 @@ let userSchema = mongoose.Schema({
         required: true,
         default: 'URL PATH TO DEFAULT PICTURE'
     },
-    creationDate:{
+    creationdate:{
         type: Date,
         default: Date.now()
     },
-    lastLoggedIn:{
+    lastloggedin:{
         type: Date
     }
 })
 
-module.exports = mongoose.model('user', userSchema);
+const User = module.exports = mongoose.model('User', userSchema);
