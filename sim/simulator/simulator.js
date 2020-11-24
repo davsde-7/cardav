@@ -45,7 +45,12 @@ class Simulator {
         if (this.windSpeedHourly < 0) {
             this.windSpeedHourly = 0
         }
-        //console.log("Hourly windspeed  :", this.windSpeedHourly)
+
+        console.log("", this.date.getDate()+"/"+(this.date.getMonth()+1)+"/"+this.date.getFullYear(), "and time:", this.date.getHours()+":"+this.date.getMinutes())
+        console.log("Annually : ", this.windSpeedAnnually)
+        console.log("Daily : ", this.windSpeedDaily)
+        console.log("Hourly : ", this.windSpeedHourly)
+        console.log("\n")
 
         this.windSpeed = this.windSpeedHourly
     }
@@ -59,7 +64,6 @@ class Simulator {
         if (this.windSpeedDaily < 0) {
             this.windSpeedDaily = 0
         }
-        //console.log("Daily windspeed : ", this.windSpeedDaily)
     }   
 
     newYear() {
@@ -69,23 +73,26 @@ class Simulator {
         }
     }
 
-    testfunction() {
-        var i = 0
-        while (i < 10){
-            console.log("Date, Hour", this.date.getDate(), this.date.getHours())
-            console.log("Annually : ", this.windSpeedAnnually)
-            console.log("Daily : ", this.windSpeedDaily)
-            console.log("Hourly : ", this.windSpeedHourly)
-            console.log("\n")
+    // testfunction() {
+    //     var i = 0
+    //     while (i < 10){
+    //         console.log(this.date.getDate(),"/",this.date.getMonth()+1,"/",this.date.getFullYear(), " and time: ", this.date.getHours(), ":", this.date.getMinutes())
+    //         console.log("Annually : ", this.windSpeedAnnually)
+    //         console.log("Daily : ", this.windSpeedDaily)
+    //         console.log("Hourly : ", this.windSpeedHourly)
+    //         console.log("\n")
+    //         this.newHour()
+    //         i++
+    //     }
+    // }
+
+    async start() {
+        this.windSpeed = gaussian(this.windSpeedDaily, config.stdev_hourly).ppf(Math.random())
+
+        setInterval(function() {
             this.newHour()
-            i++
-        }
+        }.bind(this), 500)
     }
 }
 
-var test = new Simulator()
-//test.newDay()
-//test.newHour()
-//test.newDay()
-//test.newHour()
-test.testfunction()
+module.exports = Simulator;

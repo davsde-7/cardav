@@ -3,6 +3,8 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const bodyParser = require('body-parser')
+
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -13,6 +15,10 @@ const dashBoardManagerRouter = require('./routes/dashboard_manager')
 const profilePageRouter = require('./routes/profile_page');
 
 const app = express();
+
+const Simulator = require('./simulator/simulator')
+const sim = new Simulator();
+sim.start();
 
 
 // Database setup
@@ -27,6 +33,9 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 app.use(logger('dev'));
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -40,7 +49,17 @@ app.use('/dashboard_prosumer', dashboardProsumerRouter);
 app.use('/dashboard_manager', dashBoardManagerRouter);
 app.use('/profile_page', profilePageRouter);
 
-
+// Code for preventing CORS errors
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  if (req.method === 'OPTION') {
+    res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
+    return res.status(200).json({});
+  }
+  next();
+})
+ 
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

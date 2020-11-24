@@ -1,6 +1,7 @@
 const express = require('express')
 const bcryptjs = require('bcryptjs')
 const router = express.Router()
+const bodyParser = require('body-parser')
 
 let User = require('../schemas/userschema')
 /* GET register page. */
