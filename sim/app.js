@@ -16,9 +16,12 @@ const profilePageRouter = require('./routes/profile_page');
 
 const app = express();
 
-const Simulator = require('./simulator/simulator')
-const sim = new Simulator();
-sim.start();
+
+//Simulator
+// const Simulator = require('./simulator/simulator')
+// const sim = new Simulator();
+// sim.start();
+
 
 
 // Database setup

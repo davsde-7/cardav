@@ -6,4 +6,8 @@ router.get('/', function(req, res, next) {
   res.render('dashboard_prosumer');
 });
 
+router.get('/getWindSpeed', function(req, res, next) {
+  
+})
+
 module.exports = router;

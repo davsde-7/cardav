@@ -4,6 +4,8 @@ const router = express.Router()
 const bodyParser = require('body-parser')
 
 let User = require('../schemas/userschema')
+
+
 /* GET register page. */
 router.get('/', function(req, res) {
   res.render('register');
@@ -39,9 +41,5 @@ router.post('/', function(req, res, next) {
     })
   })
 })
-
-router.get('/', function(req, res) {
-  res.render('login');
-});
 
 module.exports = router;
