@@ -17,19 +17,19 @@ class Prosumer {
     updateProduction(production) {
         //calculate production based on the wind turbine and battery?
         //the production should be used to supply the prosumers own demand on electricity first before selling to the market
-        this.setNetProduction();
+        this.updateNetProduction();
     }
 
     updateConsumption(consumption) {
         //calculate the consumption based on the prosumers own demand for electricity right now?
         //check conditions for blackout, and issue warnings if a blackout is about to happen
-        this.setNetProduction();
+        this.updateNetProduction();
     }
 
     updateNetProduction(){
         this.netProduction = this.production - this.consumption;
 
-        if (this.netProduction > 0) {
+        if (this.netProduction >= 0) {
             //the prosumer controls how much of the excessive production gets sold to the market and how much that gets sent to its own bufferbattery
             //based on the market price etc
             //70% to own bufferbattery and 30% to market
