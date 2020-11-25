@@ -3,8 +3,9 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-const bodyParser = require('body-parser')
-
+const bodyParser = require('body-parser');
+const jwt = require('jsonwebtoken');
+const expressValidator = require('express-validator');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -24,6 +25,7 @@ const app = express();
 
 
 
+
 // Database setup
 const mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/m7011e', {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex:true});
@@ -38,6 +40,9 @@ app.set('view engine', 'pug');
 app.use(logger('dev'));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
+
+// Setup middleware epxressValidator
+app.use(expressValidator());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
