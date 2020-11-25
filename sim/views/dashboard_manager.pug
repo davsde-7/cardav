@@ -1,4 +1,4 @@
-extends layout
+extends layout_loggedin
 
 block content
     div.mt-6
@@ -7,6 +7,9 @@ block content
         br
         h7 There is no current blackout/There is a blackout affecting the following households: listlist
         br
+        br
+        a(href="http://130.240.200.34:3000/prosumers") Manage prosumers here!
+        br 
         br
         h7 #[strong Coal power plant status]
         br

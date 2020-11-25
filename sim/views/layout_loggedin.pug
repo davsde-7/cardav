@@ -1,0 +1,39 @@
+doctype html
+html
+  head
+    title M7011E Project
+    link(rel='stylesheet' href='/components/bootstrap/dist/css/bootstrap.css')    
+  body
+    nav.navbar.navbar-expand-md.navbar-dark.bg-dark.fixed-top
+      a.navbar-brand(href='/') CarDav
+      button.navbar-toggler(type='button' data-toggle='collapse' data-target='#navbarsExampleDefault' aria-controls='navbarsExampleDefault' aria-expanded='false' aria-label='Toggle navigation')
+        span.navbar-toggler-icon
+      #navbarsExampleDefault.collapse.navbar-collapse
+        ul.navbar-nav.mr-auto
+          li.nav-item
+            a.nav-link(href='/dashboard_manager') Dashboard
+          li.nav-item
+            a.nav-link(href='/profile_page') Profile
+          li.nav-item
+            a.nav-link(href='/') Logout
+          //li.nav-item.dropdown
+            a#dropdown01.nav-link.dropdown-toggle(href='#' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false') Dropdown
+            .dropdown-menu(aria-labelledby='dropdown01')
+              a.dropdown-item(href='#') Action
+              a.dropdown-item(href='#') Another action
+              a.dropdown-item(href='#') Something else here
+        //form.form-inline.my-2.my-lg-0
+          input.form-control.mr-sm-2(type='text' placeholder='Search' aria-label='Search')
+          button.btn.btn-outline-success.my-2.my-sm-0(type='submit') Search
+    .container.mt-6
+      if errors
+        each error, i in errors
+          div(class="alert alert-danger") #{error.msg}
+      block content
+      br
+      hr
+      footer
+    script(src='/components/jquery/dist/jquery.js')
+    script(src='/components/bootstrap/dist/js/bootstrap.js')
+      
+

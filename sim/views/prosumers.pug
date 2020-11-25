@@ -1,0 +1,46 @@
+extends layout_loggedin
+
+block content
+    div.mt-6
+        h5 Manage prosumers
+        a(href="http://130.240.200.34:3000/dashboard_manager") Return to dashboard
+        br
+        br
+        table(style='width:100%', border='1')
+            tr
+                th Username
+                th Email
+                th System
+                th Block from selling to market
+                th Logged in
+            tr
+                td test
+                td test@test.com
+                td 
+                    a(href="http://130.240.200.34:3000/prosumers") Link to system
+                td 
+                    input#rangeInput(type='range' name='rangeInput' min='10' max='100' value='10' step='10' onChange='amount.value=rangeInput.value')
+                    output#amount(name='amount' for='rangeInput') 10s 
+                    button#view.btn.btn-primary(name='block' onclick="location.href='/prosumers'") Block
+                td #[strong Yes]
+            tr
+                td Carker
+                td carker-7@test.com
+                td 
+                    a(href="http://130.240.200.34:3000/prosumers") Link to system
+                td 
+                    input#rangeInput1(type='range' name='rangeInput1' min='10' max='100' value='10' step='10' onChange='amount1.value=rangeInput1.value')
+                    output#amount1(name='amount1' for='rangeInput1') 10s 
+                    button#view.btn.btn-primary(name='block' onclick="location.href='/prosumers'") Block
+                td No
+            tr
+                td Davsde
+                td davsde-7@test.com
+                td 
+                    a(href="http://130.240.200.34:3000/prosumers") Link to system
+                td 
+                    input#rangeInput2(type='range' name='rangeInput2' min='10' max='100' value='10' step='10' onChange='amount2.value=rangeInput2.value')
+                    output#amount2(name='amount2' for='rangeInput2') 10s 
+                    button#view.btn.btn-primary(name='block' onclick="location.href='/prosumers'") Block
+                td #[strong Yes]
+

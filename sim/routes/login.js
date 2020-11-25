@@ -1,6 +1,7 @@
 const express = require('express')
 const bcryptjs = require('bcryptjs')
 const router = express.Router()
+const jwt = require('jsonwebtoken')
 
 let User = require('../schemas/userschema')
 
@@ -25,7 +26,9 @@ router.post('/', async function(req, res) {
     });
 
   // Else if valid input, continue
-  } else {
+  } 
+  
+  else {
     // Check if username exists in database
     let userusername = await User.findOne({username: req.body.username})
     if(userusername) {
@@ -33,8 +36,24 @@ router.post('/', async function(req, res) {
       const isMatch = await bcryptjs.compare(password, user.password);
 
       if (isMatch) {
-        res.redirect('/dashboard_manager');
-      } else {
+        let token = jwt.sign(
+          {
+            username: user.username,
+            role: user.role,
+            userId: user._id
+          }, process.env.JWT_KEY,
+          {
+            expiresIn: "10m"
+          }
+        )
+        if(user.role == "manager") {
+          res.redirect('/dashboard_manager');
+        } else {
+          res.redirect('/dashboard_prosumer');
+        }
+      } 
+      
+      else {
         errors=[{msg: 'Username or password is incorrect'}]
         res.render('login', {
           errors:errors
