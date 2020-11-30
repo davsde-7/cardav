@@ -47,9 +47,9 @@ router.post('/', async function(req, res) {
           }
         )
         if(user.role == "manager") {
-          res.redirect('/dashboard_manager');
+          res.redirect('/dashboard_manager/');
         } else {
-          res.redirect('/dashboard_prosumer');
+          res.redirect('/dashboard_prosumer/');
         }
       } 
       

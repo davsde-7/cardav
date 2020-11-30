@@ -7,7 +7,7 @@ class Simulator {
         this.windSpeedAnnually = gaussian(config.mean_anually, config.stdev_anually).ppf(Math.random())
         this.windSpeedDaily = gaussian(this.windSpeedAnnually, config.stdev_daily).ppf(Math.random())
         this.windSpeedHourly = gaussian(this.windSpeedDaily, config.stdev_hourly).ppf(Math.random())
-        this.windSpeed = 0;
+        this.windSpeed = 0
         this.totalConsumption = 0
         this.electricityPrice = 0
         this.date = new Date(config.start_date)
@@ -20,8 +20,8 @@ class Simulator {
         return this.totalConsumption
     }
 
-    getElectricityPrice() {
-        this.electricityPrice = this.totalConsumption - this.windSpeed  // Supply and demand linear function, WIP not sure about windSpeed
+    updateElectricityPrice() {
+        this.electricityPrice = 10 - this.windSpeed  // Supply and demand linear function, WIP not sure about windSpeed
     }
 
     getWindHourly() {
@@ -46,11 +46,7 @@ class Simulator {
             this.windSpeedHourly = 0
         }
 
-        console.log("", this.date.getDate()+"/"+(this.date.getMonth()+1)+"/"+this.date.getFullYear(), "and time:", this.date.getHours()+":"+this.date.getMinutes())
-        console.log("Annually : ", this.windSpeedAnnually)
-        console.log("Daily : ", this.windSpeedDaily)
-        console.log("Hourly : ", this.windSpeedHourly)
-        console.log("\n")
+        this.updateElectricityPrice()
 
         this.windSpeed = this.windSpeedHourly
     }
@@ -73,16 +69,33 @@ class Simulator {
         }
     }
 
+    getWindSpeed() {
+        return this.windSpeed;
+    }
+
+    getDate() {
+        return this.date;
+    }
+
+    getAll() {
+        return {
+            "windSpeed": this.windSpeed.toString(),
+            "date": this.date.toString(),
+            "electricityPrice": this.electricityPrice.toString()
+        };
+    }
+
     // testfunction() {
-    //     var i = 0
-    //     while (i < 10){
-    //         console.log(this.date.getDate(),"/",this.date.getMonth()+1,"/",this.date.getFullYear(), " and time: ", this.date.getHours(), ":", this.date.getMinutes())
-    //         console.log("Annually : ", this.windSpeedAnnually)
-    //         console.log("Daily : ", this.windSpeedDaily)
-    //         console.log("Hourly : ", this.windSpeedHourly)
-    //         console.log("\n")
-    //         this.newHour()
-    //         i++
+    //      var i = 0
+    //          while (i < 10){
+    //              console.log("", this.date.getDate()+"/"+(this.date.getMonth()+1)+"/"+this.date.getFullYear(), "and time:", this.date.getHours()+":"+this.date.getMinutes())
+    //              console.log("Annually : ", this.windSpeedAnnually)
+    //              console.log("Daily : ", this.windSpeedDaily)
+    //              console.log("Hourly : ", this.windSpeedHourly)
+    //              console.log("\n")
+    //              console.log("\n")
+    //              this.newHour()
+    //              i++
     //     }
     // }
 

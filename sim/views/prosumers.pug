@@ -3,44 +3,75 @@ extends layout_loggedin
 block content
     div.mt-6
         h5 Manage prosumers
-        a(href="http://130.240.200.34:3000/dashboard_manager") Return to dashboard
+        a(href="http://130.240.200.34:3000/dashboard_manager/") Return to dashboard
         br
+        br
+        h7#date Data fetched: 
         br
         table(style='width:100%', border='1')
             tr
                 th Username
                 th Email
-                th System
-                th Block from selling to market
+                th Production
+                th Consumption
+                th Net production
+                th Buffer capacity
+                th Block from selling to market (#h)
                 th Logged in
             tr
                 td test
                 td test@test.com
-                td 
-                    a(href="http://130.240.200.34:3000/prosumers") Link to system
-                td 
+                td 123
+                td 123
+                td 123
+                td 100
+                td
                     input#rangeInput(type='range' name='rangeInput' min='10' max='100' value='10' step='10' onChange='amount.value=rangeInput.value')
-                    output#amount(name='amount' for='rangeInput') 10s 
-                    button#view.btn.btn-primary(name='block' onclick="location.href='/prosumers'") Block
-                td #[strong Yes]
-            tr
-                td Carker
-                td carker-7@test.com
-                td 
-                    a(href="http://130.240.200.34:3000/prosumers") Link to system
-                td 
-                    input#rangeInput1(type='range' name='rangeInput1' min='10' max='100' value='10' step='10' onChange='amount1.value=rangeInput1.value')
-                    output#amount1(name='amount1' for='rangeInput1') 10s 
+                    output#amount(name='amount' for='rangeInput') 10 
                     button#view.btn.btn-primary(name='block' onclick="location.href='/prosumers'") Block
                 td No
             tr
+                td Carker
+                td carker-7@test.com
+                td 123
+                td 123
+                td 123
+                td 100
+                td
+                    input#rangeInput1(type='range' name='rangeInput1' min='10' max='100' value='10' step='10' onChange='amount1.value=rangeInput1.value')
+                    output#amount1(name='amount1' for='rangeInput1') 10 
+                    button#view.btn.btn-primary(name='block' onclick="location.href='/prosumers'") Block
+                td #[strong Yes]
+            tr
                 td Davsde
                 td davsde-7@test.com
-                td 
-                    a(href="http://130.240.200.34:3000/prosumers") Link to system
-                td 
+                td 123
+                td 123
+                td 123
+                td 100
+                td
                     input#rangeInput2(type='range' name='rangeInput2' min='10' max='100' value='10' step='10' onChange='amount2.value=rangeInput2.value')
-                    output#amount2(name='amount2' for='rangeInput2') 10s 
+                    output#amount2(name='amount2' for='rangeInput2') 10 
                     button#view.btn.btn-primary(name='block' onclick="location.href='/prosumers'") Block
                 td #[strong Yes]
 
+            script.
+                function init() {
+                    $.get( "./getAll", function( data ) {
+                    //document.getElementById("windSpeed").innerHTML = "Wind: " + "<strong>" + parseFloat(data.windSpeed).toFixed(3) + "</strong> m/s" ;
+                    dateStr = data.date.split("GMT")
+                    document.getElementById("date").innerHTML = "Data fetched: " + "<strong>" + dateStr[0] + "</strong>" ;
+                    //document.getElementById("electricityPrice").innerHTML = "Electricity price on the market: " + "<strong>" + parseFloat(data.electricityPrice).toFixed(3) + " kr/kWH</strong>" ;
+                    });
+                }
+
+                window.onload = init;
+
+                setInterval(function(){
+                    $.get( "./getAll", function( data ) {
+                    //document.getElementById("windSpeed").innerHTML = "Wind: " + "<strong>" + parseFloat(data.windSpeed).toFixed(3) + "</strong> m/s" ;
+                    dateStr = data.date.split("GMT")
+                    document.getElementById("date").innerHTML = "Data fetched: " + "<strong>" + dateStr[0] + "</strong>" ;
+                    //document.getElementById("electricityPrice").innerHTML = "Electricity price on the market: " + "<strong>" + parseFloat(data.electricityPrice).toFixed(3) + " kr/kWH</strong>" ;
+                    });
+                }, 500);

@@ -15,15 +15,8 @@ const dashboardProsumerRouter = require('./routes/dashboard_prosumer')
 const dashBoardManagerRouter = require('./routes/dashboard_manager')
 const profilePageRouter = require('./routes/profile_page');
 const prosumersRouter = require('./routes/prosumers');
+const simulatorRouter = require('./routes/simulator')
 const app = express();
-
-
-//Simulator
-// const Simulator = require('./simulator/simulator')
-// const sim = new Simulator();
-// sim.start();
-
-
 
 
 // Database setup

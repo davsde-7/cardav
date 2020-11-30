@@ -3,12 +3,12 @@ extends layout_loggedin
 block content
     div.mt-6
         h5 Welcome, username! [manager]
-        h7 Here is the current data fetched 2020-11-16 at 15:16:00.
+        h7#date 
         br
         h7 There is no current blackout/There is a blackout affecting the following households: listlist
         br
         br
-        a(href="http://130.240.200.34:3000/prosumers") Manage prosumers here!
+        a(href="http://130.240.200.34:3000/prosumers/") Manage prosumers here!
         br 
         br
         h7 #[strong Coal power plant status]
@@ -20,11 +20,13 @@ block content
         h7 Status (started/running/stopped): #[strong Running]
         br
         br
+        h7#windSpeed Wind:
+        br
         h7 Market demand: #[strong Very much]
         br
         h7 Modelled electricity price: #[strong 123]
         br
-        h7 Electricity price: #[strong 1234]
+        h7#electricityPrice Electricity price on the market:
         br
         br
         h7 #[strong Handle production]
@@ -46,7 +48,7 @@ block content
         br
         .col-md-3.mx-left(style="padding-left: 0")
             .form-group.col-lg-8(style="padding-left: 0")
-                input.form-control(type='number' name='price' id='price' value='' placeholder='01234' min='1')
+                input.form-control(type='number' name='price' id='price' value='' placeholder='012 kr/kWH' min='1') 
         .col-sm-8(style="padding-left: 0")
           button#view.btn.btn-primary(name='price' onclick="location.href='/dashboard_manager'") Update price!
         br
@@ -61,6 +63,17 @@ block content
         br
         br
         script.
+          function init() {
+            $.get( "./getAll", function( data ) {
+              document.getElementById("windSpeed").innerHTML = "Wind: " + "<strong>" + parseFloat(data.windSpeed).toFixed(3) + "</strong> m/s" ;
+              dateStr = data.date.split("GMT")
+              document.getElementById("date").innerHTML = "Data fetched: " + "<strong>" + dateStr[0] + "</strong>" ;
+              document.getElementById("electricityPrice").innerHTML = "Electricity price on the market: " + "<strong>" + parseFloat(data.electricityPrice).toFixed(3) + " kr/kWH</strong>" ;
+            });
+          }
+
+          window.onload = init;
+
           function prodMarketChange() {
           var x = document.getElementById("prodMarketInput").value;
           document.getElementById("prodBufferInput").value = 100-x;
@@ -76,3 +89,11 @@ block content
           document.getElementById("prodBuffer").innerHTML = x;
           }
 
+          setInterval(function(){
+            $.get( "./getAll", function( data ) {
+              document.getElementById("windSpeed").innerHTML = "Wind: " + "<strong>" + parseFloat(data.windSpeed).toFixed(3) + "</strong> m/s" ;
+              dateStr = data.date.split("GMT")
+              document.getElementById("date").innerHTML = "Data fetched: " + "<strong>" + dateStr[0] + "</strong>" ;
+              document.getElementById("electricityPrice").innerHTML = "Electricity price on the market: " + "<strong>" + parseFloat(data.electricityPrice).toFixed(3) + " kr/kWH</strong>" ;
+            });
+          }, 500);

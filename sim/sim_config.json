@@ -1,7 +1,7 @@
 {
     "mean_anually" : 5.0,
-    "stdev_anually" : 2.0,
-    "stdev_daily" : 1.0,
-    "stdev_hourly" : 0.25,
-    "start_date" : "December 31, 2021 17:00:00"
+    "stdev_anually" : 1.5,
+    "stdev_daily" : 0.5,
+    "stdev_hourly" : 0.05,
+    "start_date" : "January, 2020 13:00:00"
 }
