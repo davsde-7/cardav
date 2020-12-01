@@ -1,5 +1,6 @@
 const express = require('express')
 const bcryptjs = require('bcryptjs')
+const session = require('express-session')
 const router = express.Router()
 const jwt = require('jsonwebtoken')
 
@@ -7,7 +8,9 @@ let User = require('../schemas/userschema')
 
 /* GET login page. */
 router.get('/', function(req, res) {
-  res.render('login');
+  error = req.session.error;
+  delete req.session.error;
+  res.render('login', { authError: error});
 });
 
 //login validation
@@ -33,20 +36,22 @@ router.post('/', async function(req, res) {
     let userusername = await User.findOne({username: req.body.username})
     if(userusername) {
       let user = await User.findOne({username: req.body.username});
-      const isMatch = await bcryptjs.compare(password, user.password);
+      var isMatch = await bcryptjs.compare(password, user.password);
 
       if (isMatch) {
-        let token = jwt.sign(
+        var token = jwt.sign(
           {
             username: user.username,
             role: user.role,
             userId: user._id
-          }, process.env.JWT_KEY,
+          }, 
+          process.env.JWT_KEY,
           {
             expiresIn: "10m"
           }
         )
         if(user.role == "manager") {
+          res.cookie('token', token, { httpOnly: true });
           res.redirect('/dashboard_manager/');
         } else {
           res.redirect('/dashboard_prosumer/');

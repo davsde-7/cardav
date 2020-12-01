@@ -1,6 +1,9 @@
 // This IS a simulator
 const gaussian = require('gaussian')
 const config = require('../sim_config.json')
+const Prosumer = require('./prosumer.js');
+const Consumer = require('./consumer.js');
+const Manager = require('./manager.js');
 
 class Simulator {
     constructor() {
@@ -9,19 +12,26 @@ class Simulator {
         this.windSpeedHourly = gaussian(this.windSpeedDaily, config.stdev_hourly).ppf(Math.random())
         this.windSpeed = 0
         this.totalConsumption = 0
-        this.electricityPrice = 0
+        this.modelledElectricityPrice = gaussian(154, 2*2).ppf(Math.random());
         this.date = new Date(config.start_date)
+        this.consumerList = [];
+        this.prosumerList = [];
+        this.manager = null;
     }
 
     getConsumption() { //Abstract function for now, WIP
-        for (h in HouseHolds) {
-            this.totalConsumption += h.getConsumption();
+        for (c in consumerList) {
+            this.totalConsumption += c.getConsumption();
+        }
+        for (p in prosumerList) {
+            this.totalConsumption += p.getConsumption();
         }
         return this.totalConsumption
     }
 
-    updateElectricityPrice() {
-        this.electricityPrice = 10 - this.windSpeed  // Supply and demand linear function, WIP not sure about windSpeed
+    updateModelledElectricityPrice() {
+        //https://www.energimarknadsbyran.se/el/dina-avtal-och-kostnader/elkostnader/elforbrukning/normal-elforbrukning-och-elkostnad-for-villa/
+        this.modelledElectricityPrice = gaussian(154, 2*2).ppf(Math.random());
     }
 
     getWindHourly() {
@@ -46,7 +56,7 @@ class Simulator {
             this.windSpeedHourly = 0
         }
 
-        this.updateElectricityPrice()
+        this.updateModelledElectricityPrice()
 
         this.windSpeed = this.windSpeedHourly
     }
@@ -81,7 +91,7 @@ class Simulator {
         return {
             "windSpeed": this.windSpeed.toString(),
             "date": this.date.toString(),
-            "electricityPrice": this.electricityPrice.toString()
+            "modelledElectricityPrice": this.modelledElectricityPrice.toString()
         };
     }
 
@@ -101,9 +111,16 @@ class Simulator {
 
     async start() {
         this.windSpeed = gaussian(this.windSpeedDaily, config.stdev_hourly).ppf(Math.random())
+        const testProsumer = new Prosumer("testtest", this.windSpeed);
+    
 
         setInterval(function() {
             this.newHour()
+            testProsumer.update();
+            //console.log(" production: " + testProsumer.production);
+            //console.log(" consumption: " + testProsumer.consumption);
+            //console.log(" net production: " + testProsumer.netProduction);
+
         }.bind(this), 500)
     }
 }

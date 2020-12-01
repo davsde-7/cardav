@@ -6,6 +6,7 @@ let User = require('../schemas/userschema')
 
 /* GET register page. */
 router.get('/', function(req, res) {
+  console.log("step 3", req.session.authError)
   res.render('register');
 });
 

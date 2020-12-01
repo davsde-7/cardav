@@ -29,6 +29,8 @@ html
       if errors
         each error, i in errors
           div(class="alert alert-danger") #{error.msg}
+      if authError
+        div(class="alert alert-danger") #{authError}
       block content
       br
       hr

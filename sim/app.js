@@ -6,6 +6,7 @@ const logger = require('morgan');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const expressValidator = require('express-validator');
+const session = require('express-session')
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -41,6 +42,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({secret: 'test'}));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);

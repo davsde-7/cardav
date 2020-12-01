@@ -16,7 +16,7 @@ block content
         br
         h7 Capacity in the buffer: #[strong 100%]
         br
-        h7#electricityPrice Electricity price on the market:
+        h7#modelledElectricityPrice Electricity price on the market:
         br
         h7 Net production market/buffer ratio: #[strong#netRatio 50/50]
         br
@@ -60,7 +60,7 @@ block content
               document.getElementById("windSpeed").innerHTML = "Wind: " + "<strong>" + parseFloat(data.windSpeed).toFixed(3) + "</strong> m/s" ;
               dateStr = data.date.split("GMT")
               document.getElementById("date").innerHTML = "Data fetched: " + "<strong>" + dateStr[0] + "</strong>" ;
-              document.getElementById("electricityPrice").innerHTML = "Electricity price on the market: " + "<strong>" + parseFloat(data.electricityPrice).toFixed(3) + " kr/kWH</strong>" ;
+              document.getElementById("modelledElectricityPrice").innerHTML = "Electricity price on the market: " + "<strong>" + parseFloat(data.modelledElectricityPrice).toFixed(3) + " cent/kWH</strong>" ;
             });
           }
 
@@ -107,7 +107,7 @@ block content
               document.getElementById("windSpeed").innerHTML = "Wind: " + "<strong>" + parseFloat(data.windSpeed).toFixed(3) + "</strong> m/s" ;
               dateStr = data.date.split("GMT")
               document.getElementById("date").innerHTML = "Data fetched: " + "<strong>" + dateStr[0] + "</strong>" ;
-              document.getElementById("electricityPrice").innerHTML = "Electricity price on the market: " + "<strong>" + parseFloat(data.electricityPrice).toFixed(3) + " kr/kWH</strong>" ;
+              document.getElementById("modelledElectricityPrice").innerHTML = "Electricity price on the market: " + "<strong>" + parseFloat(data.modelledElectricityPrice).toFixed(3) + " cent/kWH</strong>" ;
             });
           }, 500);
 
