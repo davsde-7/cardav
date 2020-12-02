@@ -5,6 +5,8 @@ const Prosumer = require('./prosumer.js');
 const Consumer = require('./consumer.js');
 const Manager = require('./manager.js');
 
+const Prosumers = require('../schemas/prosumerschema')
+
 class Simulator {
     constructor() {
         this.windSpeedAnnually = gaussian(config.mean_anually, config.stdev_anually).ppf(Math.random())
@@ -59,6 +61,10 @@ class Simulator {
         this.updateModelledElectricityPrice()
 
         this.windSpeed = this.windSpeedHourly
+
+        for(var i = 0; i < this.prosumerList.length; i++) {
+            this.prosumerList[i].update(this.windSpeed)
+        }
     }
 
     newDay() {
@@ -95,6 +101,34 @@ class Simulator {
         };
     }
 
+    addProsumer(username) {
+        let newProsumer = new Prosumer(username);
+        this.prosumerList.push(newProsumer);
+    }
+
+    addConsumer() {
+        let newConsumer = new Consumer();
+        this.consumerList.push(newConsumer);
+    }
+    
+    checkProsumers() {
+        Prosumers.find(function(error, prosumers) {
+            if(error) {
+                console.log(error);
+                return;
+            }
+            if (prosumers.length != this.prosumerList.length) {
+                for(var i = 0; i < this.prosumerList.length; i++) {
+                    delete this.prosumerList[i];
+                }
+                this.prosumerList = []
+                for(var i = 0; i < prosumers.length; i++) {                   
+                    this.addProsumer(prosumers[i].username);
+                }
+            }
+        }.bind(this)).exec();
+    }
+
     // testfunction() {
     //      var i = 0
     //          while (i < 10){
@@ -111,15 +145,44 @@ class Simulator {
 
     async start() {
         this.windSpeed = gaussian(this.windSpeedDaily, config.stdev_hourly).ppf(Math.random())
-        const testProsumer = new Prosumer("testtest", this.windSpeed);
+        /* const testProsumer = new Prosumer("testtest"); */
+        
+        Prosumers.find(function(error, prosumers) {
+            if(error) {
+                console.log(error);
+                return;
+            }
+
+            console.log("Database list of prosumers:" + prosumers + " length="+ prosumers.length + "\n");
+            for(var i = 0; i < prosumers.length; i++) {
+                console.log("Found prosumer: "+ prosumers[i].username + ", adding to list.");
+                this.addProsumer(prosumers[i].username);
+                console.log("Successfully added: " + prosumers[i].username + " to the list. \n");
+            }
+            console.log("Prosumerlist populated: ");
+            console.log(this.prosumerList);
+        }.bind(this)).exec();
     
+        var count = 0;
 
         setInterval(function() {
-            this.newHour()
-            testProsumer.update();
-            //console.log(" production: " + testProsumer.production);
-            //console.log(" consumption: " + testProsumer.consumption);
-            //console.log(" net production: " + testProsumer.netProduction);
+            this.newHour();
+           /*  testProsumer.update(this.windSpeed);
+            console.log(" production: " + testProsumer.production);
+            console.log(" consumption: " + testProsumer.consumption);
+            console.log(" net production: " + testProsumer.netProduction); */
+
+            for(var i = 0; i < this.prosumerList.length; i++) {
+                this.prosumerList[i].print();
+            }             
+
+            count ++;
+
+            if(count == 10) {
+
+                this.checkProsumers();
+                count = 0;
+            }
 
         }.bind(this), 500)
     }

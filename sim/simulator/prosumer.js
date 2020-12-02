@@ -1,23 +1,24 @@
 const config = require('../sim_config.json')
 const gaussian = require('gaussian')
-const BufferBattery = require('./bufferBattery.js');
+const BufferBatterySchema = require('./bufferBattery.js');
+
+const ProsumerSchema = require('../schemas/prosumerschema');
 
 class Prosumer {
-    constructor(userName, currentWind){
+    constructor(userName){
         this.userName = userName; //used for login
         this.production = 0.0; //how much the prosumer produces
         this.consumption = 0.0; //how much the prosumer consumes
         this.netProduction = 0.0; //have to keep track if this value is < 0 or > 0
         this.marketDemand = 0.0; //the prosumer can have a demand for market electricity in case of empty battery and no wind(?)
-        this.currentWind = currentWind;
-        this.bufferBattery = new BufferBattery(this.userName, 50, 100); //how much electricity that is stored
+        //this.bufferBattery = new BufferBattery(this.userName, 50, 100); //how much electricity that is stored
         this.blackout = false; //when the buffer battery is empty and the market/power plant cannot supply with enough electricity the prosumer gets a blackout
     }
 
     //function to update the values every hour of the simulation
     //https://www.energimarknadsbyran.se/el/dina-avtal-och-kostnader/elkostnader/elforbrukning/normal-elforbrukning-och-elkostnad-for-villa/
-    update() {
-        this.production = this.currentWind * 0.6;
+    update(currentWind) {
+        this.production = currentWind * 0.6;
         this.updateBufferBattery();
         this.consumption = gaussian(2.283, 0.3*0.3).ppf(Math.random());
         this.netProduction = this.production - this.consumption;
@@ -28,7 +29,18 @@ class Prosumer {
         } else {
             this.marketDemand = 0.0;
         }
+        
     }
+
+    print() {
+        console.log("Username: " + this.userName);
+        console.log("production: " + this.production);
+        console.log("consumption: " + this.consumption);
+        console.log("netProduction: " + this.netProduction);
+        console.log("marketDemand: " + this.marketDemand);
+        console.log("blackout: " + this.blackout + "\n");
+    }
+
 
     updateBufferBattery() {
 

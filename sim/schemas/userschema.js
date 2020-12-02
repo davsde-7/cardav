@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const bcryptjs = require('bcryptjs');
 
 // Schema for users
 let userSchema = mongoose.Schema({
@@ -21,7 +20,7 @@ let userSchema = mongoose.Schema({
     role:{
         type: String,
         required: true,
-        default: 'consumer'
+        default: 'prosumer'
     },
     image:{
         type: String,

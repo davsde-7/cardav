@@ -1,10 +1,10 @@
 const gaussian = require('gaussian')
 
 class Consumer {
-    constructor(owner, marketDemand) {
-        this.owner = owner;
+    constructor() {
+        this.id = "blabla";
         this.consumption = 0.0;
-        this.marketDemand = marketDemand;
+        this.marketDemand = 0.0;
         this.blackout = false; //should the consumer also be in the risk of having blackouts?
     }
 

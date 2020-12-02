@@ -2,14 +2,13 @@ const express = require('express')
 const bcryptjs = require('bcryptjs')
 const router = express.Router()
 
-let User = require('../schemas/userschema')
+const Prosumers = require('../schemas/prosumerschema')
+const User = require('../schemas/userschema')
 
 /* GET register page. */
 router.get('/', function(req, res) {
-  console.log("step 3", req.session.authError)
   res.render('register');
 });
-
 
 // Register form
 router.post('/', async function(req, res) {
@@ -56,6 +55,10 @@ router.post('/', async function(req, res) {
         password:password,
       })
 
+      let newProsumer = new Prosumers({
+        username:username,
+      })
+
       // Hashes password and creates the user and saves it to the database
       bcryptjs.genSalt(10, function(error, salt) {
         bcryptjs.hash(newUser.password, salt, function(error, hash) {
@@ -68,6 +71,14 @@ router.post('/', async function(req, res) {
               console.log(error);
               return;
             } else {
+              newProsumer.save(function(error){
+                if (error) {
+                  console.log(error);
+                  return;
+                } else {
+                  console.log("Success, added the prosumer " + username + " to the database.");
+                }              
+              })
               res.redirect('/login');
             }
           })
