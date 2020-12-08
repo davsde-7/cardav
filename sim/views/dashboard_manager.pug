@@ -2,7 +2,7 @@ extends layout_loggedin
 
 block content
     div.mt-6
-        h5 Welcome, username! [manager]
+        h5#username Welcome, 
         h7#date 
         br
         h7 There is no current blackout/There is a blackout affecting the following households: listlist
@@ -13,9 +13,9 @@ block content
         br
         h7 #[strong Coal power plant status]
         br
-        h7 Production: #[strong 355]
+        h7#production Production:
         br
-        h7 Production market/buffer ratio: #[strong 50/50]
+        h7#marketBufferRatio Production market/buffer ratio:
         br
         h7 Status (started/running/stopped): #[strong Running]
         br
@@ -24,7 +24,7 @@ block content
         br
         h7 Market demand: #[strong Very much]
         br
-        h7 Electricity price on the market: #[strong $$$]
+        h7#electricityPrice Electricity price on the market:
         br
         h7#modelledElectricityPrice Modelled electricity price: 
         br
@@ -41,25 +41,21 @@ block content
         br
         br
         .col-sm-8(style="padding-left: 0")
-          button#view.btn.btn-primary(name='production' onclick="location.href='/dashboard_manager'") Update production!
+          button#view.btn.btn-primary(name='production' onclick="saveMarketBufferRatio()") Update production!
         br
         h7 #[strong Set electricity price]
         br
         br
         .col-md-3.mx-left(style="padding-left: 0")
             .form-group.col-lg-8(style="padding-left: 0")
-                input.form-control(type='number' name='price' id='price' value='' placeholder='012 kr/kWH' min='1') 
+                input.form-control(type='text' name='price' id='price' value='' placeholder='0.12 kr/kWH' min='1') 
         .col-sm-8(style="padding-left: 0")
-          button#view.btn.btn-primary(name='price' onclick="location.href='/dashboard_manager'") Update price!
+          button#view.btn.btn-primary(name='priceButton' onclick="saveElectricityprice()") Update price!
         br
         h7 #[strong Update coal power plant status]
         br
-        h7 (If stopped this button is visible)
         .col-sm-8(style="padding-left: 0")
-            button#view.btn.btn-primary(name='start' onclick="location.href='/dashboard_manager'") Start power plant
-        h7 (If started this button is visible)
-        .col-sm-8(style="padding-left: 0")
-            button#view.btn.btn-primary(name='stop' onclick="location.href='/dashboard_manager'") Stop
+          button#powerPlantStatus.btn.btn-primary(name='start' onclick="savePowerPlantStatus()")
         br
         br
         script.
@@ -68,8 +64,49 @@ block content
               document.getElementById("windSpeed").innerHTML = "Wind: " + "<strong>" + parseFloat(data.windSpeed).toFixed(3) + "</strong> m/s" ;
               dateStr = data.date.split("GMT")
               document.getElementById("date").innerHTML = "Data fetched: " + "<strong>" + dateStr[0] + "</strong>" ;
-              document.getElementById("modelledElectricityPrice").innerHTML = "Modelled electricity price: " + "<strong>" + parseFloat(data.modelledElectricityPrice).toFixed(3) + " cent/kWH</strong>" ;
+              document.getElementById("modelledElectricityPrice").innerHTML = "Modelled electricity price: " + "<strong>" + parseFloat(data.modelledElectricityPrice).toFixed(3) + " </strong>cent/kWH" ;
             });
+
+            $.get( "./getManagerData", function( data ) {
+              document.getElementById("production").innerHTML = "Production: " + "<strong>" + parseFloat(data.production).toFixed(5) + "</strong> kWH";
+              document.getElementById("electricityPrice").innerHTML = "Electricity price on the market: " + "<strong>" + parseFloat(data.electricityPrice).toFixed(5) + "</strong> kWH";
+              document.getElementById("marketBufferRatio").innerHTML = "Production market/buffer ratio: " + "<strong>" + parseFloat(data.marketRatio) + "/" + parseFloat(data.bufferRatio) + "</strong>";
+              document.getElementById("username").innerHTML = "Welcome, " + data.username + "!";
+              document.getElementById("powerPlantStatus").innerHTML = data.powerPlantStatus;
+            });
+          }
+
+          function saveElectricityprice() {
+            var newPrice = document.getElementById("price").value;
+            newPrice = parseFloat(newPrice);
+            if (typeof(newPrice) == "number" && newPrice == newPrice) {
+              $.post( "./saveElectricityPrice", {price: newPrice});
+            }
+          }
+
+          function saveMarketBufferRatio() {
+            var newMarketRatio = document.getElementById("prodMarketInput").value;
+            var newBufferRatio = document.getElementById("prodBufferInput").value;
+            newMarketRatio = parseFloat(newMarketRatio);
+            newBufferRatio = parseFloat(newBufferRatio);
+            $.post( "./saveMarketBufferRatio", {marketRatio: newMarketRatio, bufferRatio: newBufferRatio});
+          }
+
+          function savePowerPlantStatus() {
+            var powerPlantStatus = document.getElementById("powerPlantStatus").innerHTML;
+            if (powerPlantStatus == "Running") {
+              powerPlantStatus = "Stopped";
+              $.post( "./savePowerPlantStatus", {powerPlantStatus: "Stopped"});
+            } else if (powerPlantStatus == "Stopped") {
+              powerPlantStatus = "Starting";
+              $.post( "./savePowerPlantStatus", {powerPlantStatus: "Starting"});
+
+              document.getElementById("powerPlantStatus").disabled = true;
+              setTimeout(function(){
+                document.getElementById("powerPlantStatus").disabled = false;
+                document.getElementById("powerPlantStatus").innerHTML = "Running";
+              },3000);
+            }
           }
 
           window.onload = init;
@@ -94,6 +131,12 @@ block content
               document.getElementById("windSpeed").innerHTML = "Wind: " + "<strong>" + parseFloat(data.windSpeed).toFixed(3) + "</strong> m/s" ;
               dateStr = data.date.split("GMT")
               document.getElementById("date").innerHTML = "Data fetched: " + "<strong>" + dateStr[0] + "</strong>" ;
-              document.getElementById("modelledElectricityPrice").innerHTML = "Modelled electricity price: " + "<strong>" + parseFloat(data.modelledElectricityPrice).toFixed(3) + " cent/kWH</strong>" ;
+              document.getElementById("modelledElectricityPrice").innerHTML = "Modelled electricity price: " + "<strong>" + parseFloat(data.modelledElectricityPrice).toFixed(3) + " </strong>cent/kWH" ;
+            });
+
+            $.get( "./getManagerData", function( data ) {
+              document.getElementById("production").innerHTML = "Production: " + "<strong>" + parseFloat(data.production).toFixed(5) + "</strong> kWH";
+              document.getElementById("electricityPrice").innerHTML = "Electricity price on the market: " + "<strong>" + parseFloat(data.electricityPrice) + " </strong>cent/kWH";
+              document.getElementById("marketBufferRatio").innerHTML = "Production market/buffer ratio: " + "<strong>" + parseFloat(data.marketRatio) + "/" + parseFloat(data.bufferRatio) + "</strong>";
             });
           }, 500);

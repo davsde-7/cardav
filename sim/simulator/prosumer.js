@@ -2,11 +2,11 @@ const config = require('../sim_config.json')
 const gaussian = require('gaussian')
 const BufferBatterySchema = require('./bufferBattery.js');
 
-const ProsumerSchema = require('../schemas/prosumerschema');
+const Prosumers = require('../schemas/prosumerschema');
 
 class Prosumer {
-    constructor(userName){
-        this.userName = userName; //used for login
+    constructor(username){
+        this.username = username; //used for login
         this.production = 0.0; //how much the prosumer produces
         this.consumption = 0.0; //how much the prosumer consumes
         this.netProduction = 0.0; //have to keep track if this value is < 0 or > 0
@@ -17,7 +17,7 @@ class Prosumer {
 
     //function to update the values every hour of the simulation
     //https://www.energimarknadsbyran.se/el/dina-avtal-och-kostnader/elkostnader/elforbrukning/normal-elforbrukning-och-elkostnad-for-villa/
-    update(currentWind) {
+    async update(currentWind) {
         this.production = currentWind * 0.6;
         this.updateBufferBattery();
         this.consumption = gaussian(2.283, 0.3*0.3).ppf(Math.random());
@@ -29,11 +29,19 @@ class Prosumer {
         } else {
             this.marketDemand = 0.0;
         }
-        
+
+        //update prosumer in database
+        const updatedProsumer = await Prosumers.findOne({username: this.username});
+        updatedProsumer.production = this.production;
+        updatedProsumer.consumption = this.consumption;
+        updatedProsumer.netProduction = this.netProduction; 
+        updatedProsumer.marketDemand = this.marketDemand;
+        updatedProsumer.blackout = this.blackout;
+        await updatedProsumer.save();
     }
 
     print() {
-        console.log("Username: " + this.userName);
+        console.log("Username: " + this.username);
         console.log("production: " + this.production);
         console.log("consumption: " + this.consumption);
         console.log("netProduction: " + this.netProduction);

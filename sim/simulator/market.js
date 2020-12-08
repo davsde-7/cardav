@@ -1,18 +1,31 @@
+const Markets = require('../schemas/marketschema')
 
 class Market {
     constructor(manager, prosumers, consumers) {
         this.manager = manager;
-        this.marketprice = 0;
+        this.marketPrice = 0;
         this.availableCapacity = 0; //how much market electricity is available right now
         this.prosumers = prosumers; //should the market keep a string of all the prosumers?
         this.consumers = consumers; //should the powerplant keep a string of all the consumers?
         this.marketDemand = 0; //the sum of all households demand for market electricity
-        
+    }
+
+    async update(prosumers, consumers) {
+        this.prosumers = prosumers;
+        this.consumers = consumers;
+
+
+
+        const updatedMarket = await Markets.findOne({manager: this.manager});
+        updatedMarket.marketPrice = this.marketPrice;
+        updatedMarket.availableCapacity = this.availableCapacity;
+        updatedMarket.marketDemand = this.marketDemand;
+        await updatedMarket.save();
     }
 
     updateMarketPrice(newPrice) {
         //add checks on the current consumption, the current battery buffer of the power plant etc and set the price accordingly
-        this.marketprice = newPrice;
+        this.marketPrice = newPrice;
     }
 
     updateAvailableCapacity(capacity) {
@@ -42,7 +55,7 @@ class Market {
     }
 
     getMarketPrice() {
-        return this.marketprice;
+        return this.marketPrice;
     }
 
     getAvailableCapacity() {

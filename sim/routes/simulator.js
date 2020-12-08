@@ -18,8 +18,14 @@ const getAll = (req, res) => {
   return;
 }
 
+const getProsumers = (req, res) => {
+  res.send(sim.getProsumers());
+  return;
+}
+
 module.exports = {
   getWindSpeed,
   getDate,
-  getAll
+  getAll,
+  getProsumers
 };

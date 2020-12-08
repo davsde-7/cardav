@@ -8,70 +8,73 @@ block content
         br
         h7#date Data fetched: 
         br
-        table(style='width:100%', border='1')
-            tr
-                th Username
-                th Email
-                th Production
-                th Consumption
-                th Net production
-                th Buffer capacity
-                th Block from selling to market (#h)
-                th Logged in
-            tr
-                td test
-                td test@test.com
-                td 123
-                td 123
-                td 123
-                td 100
-                td
-                    input#rangeInput(type='range' name='rangeInput' min='10' max='100' value='10' step='10' onChange='amount.value=rangeInput.value')
-                    output#amount(name='amount' for='rangeInput') 10 
-                    button#view.btn.btn-primary(name='block' onclick="location.href='/prosumers'") Block
-                td No
-            tr
-                td Carker
-                td carker-7@test.com
-                td 123
-                td 123
-                td 123
-                td 100
-                td
-                    input#rangeInput1(type='range' name='rangeInput1' min='10' max='100' value='10' step='10' onChange='amount1.value=rangeInput1.value')
-                    output#amount1(name='amount1' for='rangeInput1') 10 
-                    button#view.btn.btn-primary(name='block' onclick="location.href='/prosumers'") Block
-                td #[strong Yes]
-            tr
-                td Davsde
-                td davsde-7@test.com
-                td 123
-                td 123
-                td 123
-                td 100
-                td
-                    input#rangeInput2(type='range' name='rangeInput2' min='10' max='100' value='10' step='10' onChange='amount2.value=rangeInput2.value')
-                    output#amount2(name='amount2' for='rangeInput2') 10 
-                    button#view.btn.btn-primary(name='block' onclick="location.href='/prosumers'") Block
-                td #[strong Yes]
+        table#table(style='width:70%', border='1')
+            
 
             script.
                 function init() {
-                    $.get( "./getAll", function( data ) {
-                    //document.getElementById("windSpeed").innerHTML = "Wind: " + "<strong>" + parseFloat(data.windSpeed).toFixed(3) + "</strong> m/s" ;
-                    dateStr = data.date.split("GMT")
+                    console.log("Running init")
+                    $.get( "./getDate", function( data ) {
+                    dateStr = data.split("GMT")
                     document.getElementById("date").innerHTML = "Data fetched: " + "<strong>" + dateStr[0] + "</strong>" ;
-                    //document.getElementById("electricityPrice").innerHTML = "Electricity price on the market: " + "<strong>" + parseFloat(data.electricityPrice).toFixed(3) + " kr/kWH</strong>" ;
+                    });
+
+                    $.get( "./getProsumers", function( data ) {
+                        const list = data;
+                        constructTable('#table', list)
                     });
                 }
-
                 window.onload = init;
 
+                function constructTable(selector, list) {                    
+                    // Getting the all column names 
+                    var cols = Headers(list, selector);
+                    console.log("List length:", list.length)            
+                    // Traversing the JSON data 
+                    for (var i = 0; i < list.length; i++) { 
+                        var row = $('<tr/>');    
+                        for (var colIndex = 0; colIndex < cols.length; colIndex++) 
+                        { 
+                            var val = list[i][cols[colIndex]];                                 
+                            // If there is any key, which is matching 
+                            // with the column name
+                            if (typeof(val) == 'number') {
+                                val = val.toFixed(3)
+                            }
+                            if (val == null) val = "";
+                                row.append($('<td/>').html(val.toString()));
+                        }                             
+                        // Adding each row to the table 
+                        $(selector).append(row); 
+                    } 
+                }                     
+                function Headers(list, selector) {
+                    var columns = []; 
+                    var header = $('<tr/>');                    
+                    for (var i = 0; i < list.length; i++) { 
+                        var row = list[i];                             
+                        for (var k in row) { 
+                            if ($.inArray(k, columns) == -1) { 
+                                columns.push(k);                                     
+                                // Creating the header 
+                                header.append($('<th/>').html(k)); 
+                            } 
+                        } 
+                    }                         
+                    // Appending the header to the table 
+                    $(selector).append(header); 
+                        return columns; 
+                }
+
                 setInterval(function(){
-                    $.get( "./getAll", function( data ) {
-                    //document.getElementById("windSpeed").innerHTML = "Wind: " + "<strong>" + parseFloat(data.windSpeed).toFixed(3) + "</strong> m/s" ;
-                    dateStr = data.date.split("GMT")
+                    $.get( "./getDate", function( data ) {
+                    dateStr = data.split("GMT")
                     document.getElementById("date").innerHTML = "Data fetched: " + "<strong>" + dateStr[0] + "</strong>" ;
-                    //document.getElementById("electricityPrice").innerHTML = "Electricity price on the market: " + "<strong>" + parseFloat(data.electricityPrice).toFixed(3) + " kr/kWH</strong>" ;
+                    });
+
+                    $.get( "./getProsumers", function( data ) {
+                        const list = data;
+                        $("#table tr").remove(); 
+                        constructTable('#table', list)
                     });
                 }, 500);

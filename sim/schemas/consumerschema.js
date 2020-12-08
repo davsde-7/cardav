@@ -9,7 +9,7 @@ let consumerSchema = mongoose.Schema({
 
     consumption:{
         type: double,
-        requred: true,
+        required: true,
         default: 0.0
     },
 })

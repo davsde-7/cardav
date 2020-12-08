@@ -7,6 +7,8 @@ router.get('/', function(req, res, next) {
   res.render('prosumers');
 });
 
-router.get('/getAll', simulator.getAll);
+router.get('/getProsumers', simulator.getProsumers);
+
+router.get('/getDate', simulator.getDate);
 
 module.exports = router;

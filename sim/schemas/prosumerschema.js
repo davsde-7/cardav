@@ -10,31 +10,37 @@ let prosumerSchema = mongoose.Schema({
 
     production:{
         type: Number,
-        requred: true,
+        required: true,
         default: 0.0
     },
 
     consumption:{
         type: Number,
-        requred: true,
+        required: true,
         default: 0.0
     },
 
     netProduction:{
         type: Number,
-        requred: true,
+        required: true,
         default: 0.0
     },
 
     marketDemand:{
         type: Number,
-        requred: true,
+        required: true,
         default: 0.0
+    },
+
+    blackout:{
+        type: Boolean,
+        required: true,
+        default: false
     },
 
     // bufferBattery:{
     //     type: BufferBatterySchema,
-    //     requred: true
+    //     required: true
     // },
 })
 

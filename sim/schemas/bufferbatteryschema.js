@@ -8,17 +8,17 @@ let bufferBatterySchema = mongoose.Schema({
     },
     maxCapacity:{
         type: Number,
-        requred: true,
+        required: true,
         default: 150.0
     },
     minCapacity:{
         type: Number,
-        requred: true,
+        required: true,
         default: 0.0
     },
     owner:{
         type: String,
-        requred: true,
+        required: true,
         unique: true
     }
 })

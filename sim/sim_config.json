@@ -3,5 +3,7 @@
     "stdev_anually" : 1.5,
     "stdev_daily" : 0.5,
     "stdev_hourly" : 0.05,
-    "start_date" : "January, 2020 13:00:00"
+    "stdev_minutely" : 0.005,
+    "start_date" : "January, 2020 13:00:00",
+    "powerplant_production" : 105
 }

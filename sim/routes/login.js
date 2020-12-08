@@ -1,6 +1,5 @@
 const express = require('express')
 const bcryptjs = require('bcryptjs')
-const session = require('express-session')
 const router = express.Router()
 const jwt = require('jsonwebtoken')
 
@@ -54,6 +53,7 @@ router.post('/', async function(req, res) {
           res.cookie('token', token, { httpOnly: true });
           res.redirect('/dashboard_manager/');
         } else {
+          res.cookie('token', token, { httpOnly: true });
           res.redirect('/dashboard_prosumer/');
         }
       } 

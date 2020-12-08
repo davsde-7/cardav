@@ -16,7 +16,7 @@ const dashboardProsumerRouter = require('./routes/dashboard_prosumer')
 const dashBoardManagerRouter = require('./routes/dashboard_manager')
 const profilePageRouter = require('./routes/profile_page');
 const prosumersRouter = require('./routes/prosumers');
-const simulatorRouter = require('./routes/simulator')
+const logoutRouter = require('./routes/logout')
 const app = express();
 
 
@@ -52,6 +52,7 @@ app.use('/dashboard_prosumer', dashboardProsumerRouter);
 app.use('/dashboard_manager', dashBoardManagerRouter);
 app.use('/profile_page', profilePageRouter);
 app.use('/prosumers', prosumersRouter);
+app.use('/logout', logoutRouter);
 
 // Code for preventing CORS errors
 app.use((req, res, next) => {
