@@ -6,7 +6,10 @@ const logger = require('morgan');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const expressValidator = require('express-validator');
-const session = require('express-session')
+const session = require('express-session');
+const flash = require('connect-flash');
+const passport = require('passport')
+const LocalStrategy = require('passport-local').Strategy;
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -37,6 +40,9 @@ app.use(bodyParser.json());
 
 // Setup middleware epxressValidator
 app.use(expressValidator());
+
+// use flash for error handling
+app.use(flash());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

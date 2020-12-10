@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const BufferBatterySchema = require('./bufferbatteryschema.js');
 
 let managerSchema = mongoose.Schema({
     username:{
@@ -17,6 +16,11 @@ let managerSchema = mongoose.Schema({
         required: true,
         default: "Running"
     },
+    powerPlantStatusChangedDate:{
+        type: Date,
+        required: true,
+        default: Date.now()
+    },
     electricityPrice:{
         type: Number,
         required: true,
@@ -25,17 +29,19 @@ let managerSchema = mongoose.Schema({
     marketRatio:{
         type: Number,
         required: true,
-        default: 50
+        default: 0.5
     },
     bufferRatio:{
         type: Number,
         required: true,
-        default: 50
+        default: 0.5
+    },
+
+    bufferBatteryCapacity: {
+        type: Number,
+        required: true,
+        default: 3700.0
     }
-    // bufferBattery:{
-    //     type: BufferBatterySchema,
-    //     required: true
-    // },
 })
 
 const Managers = module.exports = mongoose.model('Managers', managerSchema);

@@ -4,7 +4,7 @@ var router = express.Router();
 
 /* GET dashboard page. */
 router.get('/', function(req, res, next) {
-  res.render('dashboard_prosumer');
+  res.render('dashboard_prosumer', {error: req.flash('errors')});
 });
 
 // Test

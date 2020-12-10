@@ -38,10 +38,41 @@ let prosumerSchema = mongoose.Schema({
         default: false
     },
 
-    // bufferBattery:{
-    //     type: BufferBatterySchema,
-    //     required: true
-    // },
+    blocked:{
+        type: Boolean,
+        required: true,
+        default: false
+    },
+
+    netProdToBufRatio: {
+        type: Number,
+        required: true,
+        default: 0.5
+    },
+
+    undProdFromBufRatio: {
+        type: Number,
+        required: true,
+        default: 0.5
+    },
+
+    sellToMarket: {
+        type: Number,
+        required: true,
+        default: 0.0
+    },
+
+    buyFromMarket: {
+        type: Number,
+        required: true,
+        default: 0.0
+    },
+
+    bufferBatteryCapacity: {
+        type: Number,
+        required: true,
+        default: 120
+    }
 })
 
 const Prosumers = module.exports = mongoose.model('Prosumers', prosumerSchema);

@@ -10,22 +10,39 @@ class Manager {
         this.username = username;
         this.prosumers = prosumers; //the manager should try to minimize the use of the Power Plant’s production, and whenever possible use the Prosumers generated electricity
         this.consumers = consumers;
-        this.bufferBattery = new BufferBattery(this.userName, 10000, 10000);
-        this.market = new Market(this.userName, prosumers, consumers);
+        this.bufferBattery = new BufferBattery(this.username, 3700, 4500);
+        this.bufferBatteryCapacity = this.bufferBattery.getCapacity();
+        this.market = new Market(this.username, prosumers, consumers);
         this.powerPlantStatus = "Running";
         this.production = 0;
+        this.electricityPrice = 0;
+        this.bufferRatio = 0.5;
+        this.marketRatio = 0.5;
+        this.prodToMarket = 0.0;
     }
 
     async update(prosumers, consumers) {
         this.prosumers = prosumers;
         this.consumers = consumers;
-        this.powerPlantStatus = this.powerPlantStatus;
-        this.production = gaussian(config.powerplant_production, 5).ppf(Math.random()); 
+        if(this.powerPlantStatus == "Stopped" || this.powerPlantStatus == "Started") {
+            this.production = 0;
+        } else {
+            this.production = gaussian(config.powerplant_production, 5).ppf(Math.random()); 
+        }
+        this.bufferBattery.setCapacity(this.production * this.bufferRatio/100);
+        this.bufferBatteryCapacity = this.bufferBattery.getCapacity();
+        this.prodToMarket = this.production * this.marketRatio/100;
 
         const updatedManager = await Managers.findOne({username: this.username});
         updatedManager.production = this.production;
-        updatedManager.powerPlantStatus = this.powerPlantStatus;
+        this.bufferRatio = updatedManager.bufferRatio/100;
+        this.marketRatio = updatedManager.marketRatio/100;
+        this.electricityPrice = updatedManager.electricityPrice;
+        this.powerPlantStatus = updatedManager.powerPlantStatus;
+        updatedManager.bufferBatteryCapacity = this.bufferBatteryCapacity;
         await updatedManager.save();
+
+        this.market.update(this.prosumers, this.consumers, this.electricityPrice, this.prodToMarket);
     }
 
     updateMarketPrice(newPrice) {
@@ -58,6 +75,10 @@ class Manager {
 
     updatePowerPlantStatus(status) {
         this.powerPlantStatus = status;
+    }
+
+    getProdToMarket() {
+        return this.prodToMarket;
     }
 }
 

@@ -119,7 +119,22 @@ class Simulator {
     }
 
     getProsumers() {
-        return this.prosumerList;
+        var tempProsumerList = [];
+        for(var i = 0; i< this.prosumerList.length; i++) {
+            var user = 
+            {
+                "Username":this.prosumerList[i].username,
+                "Production":this.prosumerList[i].production,
+                "Consumption":this.prosumerList[i].consumption,
+                "Net Production":this.prosumerList[i].netProduction,
+                "Market Demand":this.prosumerList[i].marketDemand,
+                "Current Capacity":this.prosumerList[i].bufferBatteryCapacity,
+                "Blackout":this.prosumerList[i].blackout,
+                "Blocked":this.prosumerList[i].blocked,                
+            }
+            tempProsumerList.push(user)
+        }
+        return tempProsumerList;
     }
 
     addProsumer(username) {
@@ -188,6 +203,7 @@ class Simulator {
                         if(users[i].role == "manager") {
                             this.manager = new Manager(users[i].username, this.consumerList, this.prosumerList)
                             this.manager.createManager();
+                            this.manager.market.createMarket();
                             return;
                         }
                     }

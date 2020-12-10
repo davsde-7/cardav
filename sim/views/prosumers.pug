@@ -20,6 +20,7 @@ block content
                     });
 
                     $.get( "./getProsumers", function( data ) {
+                        console.log(data)
                         const list = data;
                         constructTable('#table', list)
                     });

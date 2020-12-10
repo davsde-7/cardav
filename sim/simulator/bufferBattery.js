@@ -16,5 +16,9 @@ class BufferBattery {
             this.currentCapacity += capacity;
         }
     }
+
+    getCapacity() {
+        return this.currentCapacity;
+    }
 }
 module.exports = BufferBattery;
