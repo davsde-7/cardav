@@ -8,7 +8,7 @@ const router = express.Router();
 /* GET dashboard page. */
 router.get('/', checkAuth, function(req, res, next) {
   if (req.userData.role != "manager") {
-    req.flash('errors', 'You do not have the authorization to visit the dashboard for managers');
+    req.flash('error', 'You do not have the authorization to visit the dashboard for managers');
     res.redirect('/dashboard_prosumer/');
   }
   res.render('dashboard_manager');

@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const session = require('express-session')
+const session = require('express-session');
 
 module.exports = (req, res, next) => {
     try {
@@ -8,7 +8,7 @@ module.exports = (req, res, next) => {
         next();
     }
     catch {
-        req.session.error = "Unauthorized access"
+        req.session.error = "Log in before you try to access this content"
         console.log("authError checkAuth: "+ req.session.error);
         return res.status(401).redirect('/login');
     }

@@ -5,7 +5,7 @@ block content
         h5#username Welcome, 
         h7#date 
         br
-        h7 There is no current blackout/There is a blackout affecting the following households: listlist
+        h7#blackoutList There are current blackouts affecting the following households:
         br
         br
         a(href="http://130.240.200.34:3000/prosumers/") Manage prosumers here!
@@ -77,8 +77,9 @@ block content
               document.getElementById("username").innerHTML = "Welcome, " + data.username + "!";
               document.getElementById("powerPlantStatus").innerHTML = "Status (started/running/stopped): " + "<strong>" + data.powerPlantStatus + "</strong>";
               document.getElementById("bufferBatteryCapacity").innerHTML = "Buffer capacity: " + "<strong>" + parseFloat(data.bufferBatteryCapacity).toFixed(3) + "</strong>";
+              blackoutStatus(data.blackoutList);
               globalPowerPlantStatus = data.powerPlantStatus;
-              initPowerPlantButton();
+              initPowerPlantButton(data);
             });
 
             $.get( "./getMarketData", function( data ) {
@@ -97,6 +98,18 @@ block content
               document.getElementById("powerPlantButton").innerHTML = "Stop powerplant";
               document.getElementById("powerPlantButton").disabled = true;
             }
+          }
+
+          function blackoutStatus(blackoutList) {
+            if(blackoutList.length == 0) {
+                document.getElementById("blackoutList").innerHTML = "There are no current blackouts.";
+              } else {
+                var households = "";
+                for(var i = 0; i < blackoutList.length; i++) {
+                  households +=  "<li>" + blackoutList[i] + "<br>";
+                }
+                document.getElementById("blackoutList").innerHTML = "There are current blackouts affecting the following households: <br>" + "<strong>" + households + "</strong>";
+              }
           }
 
           function saveElectricityprice() {
@@ -164,6 +177,7 @@ block content
               document.getElementById("marketBufferRatio").innerHTML = "Production market/buffer ratio: " + "<strong>" + parseFloat(data.marketRatio) + "/" + parseFloat(data.bufferRatio) + "</strong>";
               document.getElementById("powerPlantStatus").innerHTML = "Status (started/running/stopped): " + "<strong>" + data.powerPlantStatus + "</strong>";
               document.getElementById("bufferBatteryCapacity").innerHTML = "Buffer capacity: " + "<strong>" + parseFloat(data.bufferBatteryCapacity).toFixed(3) + "</strong>";
+              blackoutStatus(data.blackoutList);
               globalPowerPlantStatus = data.powerPlantStatus;
               var date = new Date(data.powerPlantStatusChangedDate);
               if (data.powerPlantStatus == "Started" && (Date.now()-date.getTime()) > 30000) {

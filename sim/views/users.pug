@@ -1,0 +1,45 @@
+extends layout_loggedin
+
+block content
+    div.mt-6
+        h5 Profile page
+
+        br
+        br
+        
+        style(type='text/css').
+            #wrap {
+            width:600px;
+            margin:0 auto;
+            }
+            #left_col {
+            float:left;
+            width:50%;
+            }
+            #right_col {
+            float:right;
+            width:50%;
+            }
+
+        #wrap
+        #left_col
+            br
+            br
+            h7 #[strong Username:] #{user.username}
+            br
+            h7 #[strong Email: ] #{user.email}
+            br
+            h7 #[strong User since: ] #{user.creationdate}
+            br
+            h7 #[strong Role: ] #{user.role}
+        #right_col
+            img(style="display: block;width: 50%;" src="images/house.png")
+            br
+            h7 #[strong Update picture]
+            form(action='')
+                label(for='img') Select picture: &nbsp;
+                input#img(type='file' name='img' accept='image/*')
+                br
+                input(type='submit' value='Upload')
+
+        

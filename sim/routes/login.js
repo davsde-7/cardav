@@ -7,9 +7,14 @@ let User = require('../schemas/userschema')
 
 /* GET login page. */
 router.get('/', function(req, res) {
-  error = req.session.error;
-  delete req.session.error;
-  res.render('login', { authError: error});
+  if(req.flash('error') != "") {
+    var error = req.flash('error');
+  }
+  else {
+    var error = req.session.error;
+    delete req.session.error;
+  }
+  res.render('login', {error:error, success:req.flash('success')});
 });
 
 //login validation

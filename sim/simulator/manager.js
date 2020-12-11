@@ -8,7 +8,7 @@ const Managers = require('../schemas/managerschema')
 class Manager {
     constructor(username, consumers, prosumers){
         this.username = username;
-        this.prosumers = prosumers; //the manager should try to minimize the use of the Power Plant’s production, and whenever possible use the Prosumers generated electricity
+        this.prosumers = prosumers; 
         this.consumers = consumers;
         this.bufferBattery = new BufferBattery(this.username, 3700, 4500);
         this.bufferBatteryCapacity = this.bufferBattery.getCapacity();
@@ -19,6 +19,7 @@ class Manager {
         this.bufferRatio = 0.5;
         this.marketRatio = 0.5;
         this.prodToMarket = 0.0;
+        this.blackoutList = [];
     }
 
     async update(prosumers, consumers) {
@@ -33,6 +34,8 @@ class Manager {
         this.bufferBatteryCapacity = this.bufferBattery.getCapacity();
         this.prodToMarket = this.production * this.marketRatio/100;
 
+        this.updateBlackoutList();
+
         const updatedManager = await Managers.findOne({username: this.username});
         updatedManager.production = this.production;
         this.bufferRatio = updatedManager.bufferRatio/100;
@@ -40,6 +43,7 @@ class Manager {
         this.electricityPrice = updatedManager.electricityPrice;
         this.powerPlantStatus = updatedManager.powerPlantStatus;
         updatedManager.bufferBatteryCapacity = this.bufferBatteryCapacity;
+        updatedManager.blackoutList = this.blackoutList;
         await updatedManager.save();
 
         this.market.update(this.prosumers, this.consumers, this.electricityPrice, this.prodToMarket);
@@ -79,6 +83,22 @@ class Manager {
 
     getProdToMarket() {
         return this.prodToMarket;
+    }
+
+    updateBlackoutList(){
+        this.blackoutList = [];
+        for(var i = 0; i < this.prosumers.length; i++) {
+            if(this.prosumers[i].blackout == true) {
+                this.blackoutList.push(this.prosumers[i].username);
+            }
+        }
+
+        for(var i = 0; i < this.consumers.length; i++) {
+            if(this.consumers[i].blackout == true) {
+                this.blackoutList.push(this.consumers[i].username);
+            }
+        }
+
     }
 }
 

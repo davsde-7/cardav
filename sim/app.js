@@ -8,18 +8,15 @@ const jwt = require('jsonwebtoken');
 const expressValidator = require('express-validator');
 const session = require('express-session');
 const flash = require('connect-flash');
-const passport = require('passport')
-const LocalStrategy = require('passport-local').Strategy;
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
-const registerRouter = require('./routes/register')
-const loginRouter = require('./routes/login')
-const dashboardProsumerRouter = require('./routes/dashboard_prosumer')
-const dashBoardManagerRouter = require('./routes/dashboard_manager')
-const profilePageRouter = require('./routes/profile_page');
+const registerRouter = require('./routes/register');
+const loginRouter = require('./routes/login');
+const dashboardProsumerRouter = require('./routes/dashboard_prosumer');
+const dashBoardManagerRouter = require('./routes/dashboard_manager');
 const prosumersRouter = require('./routes/prosumers');
-const logoutRouter = require('./routes/logout')
+const logoutRouter = require('./routes/logout');
 const app = express();
 
 
@@ -56,7 +53,6 @@ app.use('/register', registerRouter);
 app.use('/login', loginRouter);
 app.use('/dashboard_prosumer', dashboardProsumerRouter);
 app.use('/dashboard_manager', dashBoardManagerRouter);
-app.use('/profile_page', profilePageRouter);
 app.use('/prosumers', prosumersRouter);
 app.use('/logout', logoutRouter);
 

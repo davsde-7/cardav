@@ -41,6 +41,12 @@ let managerSchema = mongoose.Schema({
         type: Number,
         required: true,
         default: 3700.0
+    },
+
+    blackoutList: {
+        type: Array,
+        required: true,
+        default: []
     }
 })
 
