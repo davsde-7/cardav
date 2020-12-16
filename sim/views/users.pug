@@ -34,13 +34,16 @@ block content
             h7 #[strong Role: ] #{user.role}
             br
             br
-            if userData.role == "manager"
-        
+            if userData.role == "manager" && user.username!="manager"
                 h7 #[strong Block from selling to market]
                 br
                 label(for='block') Block: 
                 input#block(type='range' min='10' max='100' value='50' step='10' onchange='blockChange()')
                 output#blockoutput 50
+                br
+                .col-sm-8(style="padding-left: 0")
+                button#view.btn.btn-primary(name='production' onclick="saveBlock()") Block
+
         #right_col
             img(style="display: block;width: 50%;" src="../images/"+user.username+".png")
             br
@@ -56,7 +59,12 @@ block content
                     function blockChange() {
                         var x = document.getElementById("block").value;
                         document.getElementById("blockoutput").value = x;
-                        //document.getElementById("blockoutput").innerHTML = x;
+                    }
+
+                    function saveBlock() {
+                        var blocked = document.getElementById("block").value;
+                        blocked = parseFloat(blocked);
+                        $.post( "./"+window.location.pathname.split("/")[2]+"/saveBlock", {blocked: blocked});
                     }
 
         

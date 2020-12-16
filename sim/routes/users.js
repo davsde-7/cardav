@@ -4,7 +4,7 @@ const Users = require('../schemas/userschema');
 const checkAuth = require('./checkAuth');
 const multer = require('multer');
 const fs = require('fs');
-
+const Prosumers = require('../schemas/prosumerschema');
 const upload = multer({dest: 'public/images'});
 
 /* GET users listing. */
@@ -49,6 +49,20 @@ router.post('/:username/upload', upload.single('image'), function(req, res, next
     req.flash('error', 'Error when uploading image, wrong image type?')
     console.log("Error when uploading image :" + err);
     res.redirect('/users');
+  });
+});
+
+
+router.post('/:username/saveBlock', checkAuth, async function(req,res) {
+  await Prosumers.find({username:req.params.username}, function(error, prosumers) {
+    if(error) {
+      console.log(error);
+      return;
+    }    
+    prosumers[0].blocked = true;
+    prosumers[0].save();
+    req.flash('success', 'Blocked user')
+    res.redirect('/users/'+req.params.username);
   });
 });
 
