@@ -1,4 +1,4 @@
-extends layout_loggedin
+extends layout
 
 block content
     div.mt-6
@@ -39,6 +39,10 @@ block content
                             var val = list[i][cols[colIndex]];                                 
                             // If there is any key, which is matching 
                             // with the column name
+                            if (colIndex == 0) {
+                                val = '<a href=http://130.240.200.34:3000/users/'+val+'>' + val + '</a>';
+                            }
+
                             if (typeof(val) == 'number') {
                                 val = val.toFixed(3)
                             }

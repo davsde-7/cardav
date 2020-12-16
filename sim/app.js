@@ -8,15 +8,18 @@ const jwt = require('jsonwebtoken');
 const expressValidator = require('express-validator');
 const session = require('express-session');
 const flash = require('connect-flash');
+const multer = require('multer');
+
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
-const registerRouter = require('./routes/register');
-const loginRouter = require('./routes/login');
-const dashboardProsumerRouter = require('./routes/dashboard_prosumer');
-const dashBoardManagerRouter = require('./routes/dashboard_manager');
+const registerRouter = require('./routes/register')
+const loginRouter = require('./routes/login')
+const dashboardProsumerRouter = require('./routes/dashboard_prosumer')
+const dashBoardManagerRouter = require('./routes/dashboard_manager')
 const prosumersRouter = require('./routes/prosumers');
 const logoutRouter = require('./routes/logout');
+const managerRouter = require('./routes/manager');
 const app = express();
 
 
@@ -34,6 +37,16 @@ app.set('view engine', 'pug');
 app.use(logger('dev'));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
+
+//multer config
+const multerStorage = multer.diskStorage({
+  destination: function(req, file, cb) {
+    cb(null, '/public/images');
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname);
+  }
+});
 
 // Setup middleware epxressValidator
 app.use(expressValidator());
@@ -55,7 +68,8 @@ app.use('/dashboard_prosumer', dashboardProsumerRouter);
 app.use('/dashboard_manager', dashBoardManagerRouter);
 app.use('/prosumers', prosumersRouter);
 app.use('/logout', logoutRouter);
-
+app.use('/manager', managerRouter);
+  
 // Code for preventing CORS errors
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");

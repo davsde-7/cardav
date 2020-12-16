@@ -32,14 +32,31 @@ block content
             h7 #[strong User since: ] #{user.creationdate}
             br
             h7 #[strong Role: ] #{user.role}
-        #right_col
-            img(style="display: block;width: 50%;" src="images/house.png")
             br
-            h7 #[strong Update picture]
-            form(action='')
-                label(for='img') Select picture: &nbsp;
-                input#img(type='file' name='img' accept='image/*')
+            br
+            if userData.role == "manager"
+        
+                h7 #[strong Block from selling to market]
                 br
-                input(type='submit' value='Upload')
+                label(for='block') Block: 
+                input#block(type='range' min='10' max='100' value='50' step='10' onchange='blockChange()')
+                output#blockoutput 50
+        #right_col
+            img(style="display: block;width: 50%;" src="../images/"+user.username+".png")
+            br
+            if userData.username==user.username || userData.role=="manager"
+                h7 #[strong Update picture]
+                form(method='post' enctype='multipart/form-data' action='./'+user.username+'/upload')
+                    label(for='img') Select picture: &nbsp;
+                    input#img(type='file' name='image' accept='image/*')
+                    br
+                    input(type='submit' value='Upload')
+
+                script.
+                    function blockChange() {
+                        var x = document.getElementById("block").value;
+                        document.getElementById("blockoutput").value = x;
+                        //document.getElementById("blockoutput").innerHTML = x;
+                    }
 
         

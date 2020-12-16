@@ -8,10 +8,12 @@ const router = express.Router();
 /* GET dashboard page. */
 router.get('/', checkAuth, function(req, res, next) {
   if (req.userData.role != "manager") {
-    req.flash('error', 'You do not have the authorization to visit the dashboard for managers');
+    req.flash('error', 'Unauthorized access to manager dashboard');
     res.redirect('/dashboard_prosumer/');
   }
-  res.render('dashboard_manager');
+  res.render('dashboard_manager', {
+    error:req.flash('error'), success:req.flash('success'), userData:req.userData
+  });
 });
 
 router.get('/getWindSpeed', simulator.getWindSpeed);

@@ -30,9 +30,9 @@ class Manager {
         } else {
             this.production = gaussian(config.powerplant_production, 5).ppf(Math.random()); 
         }
-        this.bufferBattery.setCapacity(this.production * this.bufferRatio/100);
+        this.bufferBattery.setCapacity(this.production * this.bufferRatio);
         this.bufferBatteryCapacity = this.bufferBattery.getCapacity();
-        this.prodToMarket = this.production * this.marketRatio/100;
+        this.prodToMarket = this.production * this.marketRatio;
 
         this.updateBlackoutList();
 
@@ -93,11 +93,11 @@ class Manager {
             }
         }
 
-        for(var i = 0; i < this.consumers.length; i++) {
+        /*for(var i = 0; i < this.consumers.length; i++) {
             if(this.consumers[i].blackout == true) {
                 this.blackoutList.push(this.consumers[i].username);
             }
-        }
+        }*/
 
     }
 }

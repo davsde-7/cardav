@@ -1,10 +1,17 @@
-var express = require('express');
-var simulator = require('./simulator');
-var router = express.Router();
+const express = require('express');
+const simulator = require('./simulator');
+const checkAuth = require('./checkAuth');
+const router = express.Router();
 
 /* GET dashboard page. */
-router.get('/', function(req, res, next) {
-  res.render('prosumers');
+router.get('/', checkAuth, function(req, res, next) {
+  if (req.userData.role != "manager") {
+    req.flash('error', 'Unauthorized access to prosumers');
+    res.redirect('/dashboard_prosumer/');
+  }
+  res.render('prosumers', {
+    error:req.flash('error'), success:req.flash('success'), userData:req.userData
+  });
 });
 
 router.get('/getProsumers', simulator.getProsumers);

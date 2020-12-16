@@ -9,7 +9,7 @@ module.exports = (req, res, next) => {
     }
     catch {
         req.session.error = "Log in before you try to access this content"
-        console.log("authError checkAuth: "+ req.session.error);
+        console.log("Authentication error (checkAuth): " + req.session.error);
         return res.status(401).redirect('/login');
     }
 };

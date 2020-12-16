@@ -6,6 +6,7 @@ const Consumer = require('./consumer.js');
 const Manager = require('./manager.js');
 
 const Prosumers = require('../schemas/prosumerschema')
+const Consumers = require('../schemas/consumerschema')
 const Managers = require('../schemas/managerschema')
 const User = require('../schemas/userschema')
 
@@ -51,36 +52,29 @@ class Simulator {
 
     newMinute() {
         this.date.setMinutes(this.date.getMinutes() + 1);
-
         if (this.date.getMinutes()==0) {
             this.newHour();
-        }
-        
-        
+        }           
     }
 
     newHour() { 
         this.date.setHours(this.date.getHours() + 1);
-
         if (this.date.getHours()==0) {
             this.newDay();
-        }
-    
+        }    
         this.windSpeedHourly = gaussian(this.windSpeedDaily, config.stdev_hourly).ppf(Math.random());
         if (this.windSpeedHourly < 0) {
             this.windSpeedHourly = 0;
         }
-
         this.updateModelledElectricityPrice();
-
         this.windSpeed = this.windSpeedHourly;
-
         this.totalConsumption = 0;
-
         for(var i = 0; i < this.prosumerList.length; i++) {
             this.prosumerList[i].update(this.windSpeed);
         }
-
+        for(var i = 0; i < this.consumerList.length; i++) {
+            this.consumerList[i].update();
+        }
         this.manager.update(this.prosumerList, this.consumerList);
     }
 
@@ -88,7 +82,6 @@ class Simulator {
         if (this.date.getMonth() == 0 && this.date.getDate() == 1)  {
             this.newYear();
         }
-
         this.windSpeedDaily = gaussian(this.windSpeedAnnually, config.stdev_daily).ppf(Math.random());
         if (this.windSpeedDaily < 0) {
             this.windSpeedDaily = 0;
@@ -130,9 +123,9 @@ class Simulator {
                 "Market Demand":this.prosumerList[i].marketDemand,
                 "Current Capacity":this.prosumerList[i].bufferBatteryCapacity,
                 "Blackout":this.prosumerList[i].blackout,
-                "Blocked":this.prosumerList[i].blocked,                
+                "Blocked":this.prosumerList[i].blocked,        
             }
-            tempProsumerList.push(user)
+            tempProsumerList.push(user);
         }
         return tempProsumerList;
     }
@@ -143,8 +136,14 @@ class Simulator {
     }
 
     addConsumer() {
-        let newConsumer = new Consumer();
+        let newConsumer = new Consumer(this.consumerList.length+1);
+        newConsumer.addToDB();
         this.consumerList.push(newConsumer);
+    }
+
+    removeConsumer() {
+        let removedConsumer = this.consumerList.pop();
+        removedConsumer.removefromDB();
     }
     
     async checkProsumers() {
@@ -181,8 +180,30 @@ class Simulator {
                 //console.log("Successfully added: " + prosumers[i].username + " to the list. \n");
                 this.prosumerList[i].update(this.windSpeed);
             }
-            console.log("Prosumerlist populated: ");
-            console.log(this.prosumerList);
+            //console.log("Prosumerlist populated: ");
+            //console.log(this.prosumerList);
+        }.bind(this)).exec();
+
+        await Consumers.find(function(error, consumers) {
+            if(error) {
+                console.log(error);
+                return;
+            }
+            console.log(consumers.length)
+            for(var i = 0; i < consumers.length; i++){
+                this.addConsumer(consumers[i].identification);
+                this.consumerList[i].update();
+            }
+            if(consumers.length == 0) {
+                console.log("Found no consumers, creating them.")
+                for(var i = 0; i < 10; i++) {
+                    console.log("Creating consumer " + (this.consumerList.length) + ".");
+                    this.addConsumer();
+                    this.consumerList[i].update();
+                }
+            }
+            console.log("consumerlist populated:");
+            console.log(this.consumerList);
         }.bind(this)).exec();
 
         await Managers.find(function(error, managers) {
@@ -207,28 +228,34 @@ class Simulator {
                             return;
                         }
                     }
-                }.bind(this)).exec();
+                }.bind(this));
             }
         }.bind(this)).exec();
 
-        var count = 0;
+        var prosumerCount = 0;
+        var consumerCount = 0;
 
         setInterval(function() {
             this.newHour();
-            //this.manager.print();
-            // for(var i = 0; i < this.prosumerList.length; i++) {
-            //     this.prosumerList[i].print();
-            // }         
-            
-            //this.prosumerList[0].print();
 
-            count ++;
+            prosumerCount ++;
+            consumerCount ++;
 
-            if(count == 10) {
+            if(prosumerCount == 10) {
                 this.checkProsumers();
-                count = 0;
-            }   
+                prosumerCount = 0;
+            }  
 
+            if (consumerCount == 24) {
+                var randomChance = Math.floor(Math.random() * 100) + 1;
+                if (randomChance > 53) { //remove consumer
+                    this.removeConsumer();
+                } 
+                else { //add consumer
+                    this.addConsumer();
+                }
+                consumerCount = 0;
+            }
         }.bind(this), 1000)
     }
 }

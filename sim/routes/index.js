@@ -1,9 +1,12 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
+const homeAuth = require('./homeAuth');
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', {error:req.flash('error'), success:req.flash('success')});
+router.get('/', homeAuth, function(req, res) {
+  res.render('index', {
+    error:req.flash('error'), success:req.flash('success'), userData:req.userData
+  });
 });
 
 module.exports = router;

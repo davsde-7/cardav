@@ -67,8 +67,8 @@ class Prosumer {
         this.blocked = updatedProsumer.blocked;
         updatedProsumer.sellToMarket = this.sellToMarket;
         updatedProsumer.buyFromMarket = this.buyFromMarket;
-        updatedProsumer.netProdToBufRatio = this.netProdToBufRatio; 
-        updatedProsumer.undProdFromBufRatio = this.undProdFromBufRatio; 
+        this.netProdToBufRatio = updatedProsumer.netProdToBufRatio/100; 
+        this.undProdFromBufRatio = updatedProsumer.undProdFromBufRatio/100;
         updatedProsumer.bufferBatteryCapacity = this.bufferBatteryCapacity;
         await updatedProsumer.save();
     }

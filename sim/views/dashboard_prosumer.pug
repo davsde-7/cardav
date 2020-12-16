@@ -1,26 +1,26 @@
-extends layout_loggedin
+extends layout
 
 block content
     div.mt-6
-        h5 Welcome, username!
+        h5#username Welcome #[strong #{userData.username}]!
         h7#date Data fetched: 
         br
         br
         h7#windSpeed Wind:
         br
-        h7 Production: #[strong 355]
+        h7#production Production: 
         br
-        h7 Consumption: #[strong 123]
+        h7#consumption Consumption: 
         br
-        h7 Net production: #[strong 232]
+        h7#netProduction Net production: #[strong 232]
         br
-        h7 Capacity in the buffer: #[strong 100%]
+        h7#bufferCapacity Capacity in the buffer:
         br
         h7#modelledElectricityPrice Electricity price on the market:
         br
-        h7 Net production market/buffer ratio: #[strong#netRatio 50/50]
+        h7#netProd Net production market/buffer ratio:
         br
-        h7 Under-production market/buffer ratio: #[strong#undRatio 50/50]
+        h7#undProd Under-production market/buffer ratio:
         br
         br
         div.form-control-range
@@ -36,7 +36,7 @@ block content
           br
           br
           .col-sm-8(style="padding-left: 0")
-            button#view.btn.btn-primary(name='netProduction' onclick="location.href='/dashboard_prosumer'") Update net production!
+            button#view.btn.btn-primary(name='netProduction' onclick="saveNetProduction()") Update net production!
           br
         div.form-control-range
           h7 #[strong Handle under-production]
@@ -51,10 +51,10 @@ block content
           br
           br
           .col-sm-8(style="padding-left: 0")
-            button#view.btn.btn-primary(name='underProduction' onclick="location.href='/dashboard_prosumer'") Update under-production!
+            button#view.btn.btn-primary(name='underProduction' onclick="saveUnderProduction()") Update under-production!
           br
           br
-          a(href="http://130.240.200.34:3000/manager") Contact the manager here!
+          a(href="http://130.240.200.34:3000/manager/") Contact the manager here!
 
         script.
           function init() {
@@ -64,9 +64,30 @@ block content
               document.getElementById("date").innerHTML = "Data fetched: " + "<strong>" + dateStr[0] + "</strong>" ;
               document.getElementById("modelledElectricityPrice").innerHTML = "Electricity price on the market: " + "<strong>" + parseFloat(data.modelledElectricityPrice).toFixed(3) + " cent/kWH</strong>" ;
             });
+            $.get( "./getProsumer", function(data) {
+               document.getElementById("production").innerHTML = "Production: " + "<strong>" + parseFloat(data.production).toFixed(3) + "</strong> kWH";
+               document.getElementById("consumption").innerHTML = "Consumption: " + "<strong>" + parseFloat(data.consumption).toFixed(3) + "</strong> kWH";
+               document.getElementById("netProduction").innerHTML = "Net production: " + "<strong>" + parseFloat(data.netProduction).toFixed(3) + "</strong> kWH";
+               document.getElementById("bufferCapacity").innerHTML = "Capacity in the buffer (max 180): " + "<strong>" + parseFloat(data.bufferBatteryCapacity).toFixed(3) + "</strong> kWH";
+               document.getElementById("netProd").innerHTML = "Net production market/buffer ratio: " + "<strong>" + (100-parseFloat(data.netProdToBufRatio)) + "/" + parseFloat(data.netProdToBufRatio) + "</strong>";
+               document.getElementById("undProd").innerHTML = "Under production market/buffer ratio: " + "<strong>" + (100-parseFloat(data.undProdFromBufRatio)) + "/" + parseFloat(data.undProdFromBufRatio) + "</strong>";
+               //console.log(data);
+            });
           }
 
           window.onload = init;
+
+          function saveNetProduction() {
+            var netProdBufferInput = document.getElementById("netProdBufferInput").value;
+            netProdBufferInput = parseFloat(netProdBufferInput);
+            $.post( "./saveNetProduction", {netProdToBufRatio: netProdBufferInput});
+          }
+
+          function saveUnderProduction() {
+            var takeFromBufferInput = document.getElementById("takeFromBufferInput").value;
+            takeFromBufferInput = parseFloat(takeFromBufferInput);
+            $.post( "./saveUnderProduction", {undProdFromBufRatio: takeFromBufferInput});
+          }
 
           function netProdMarketChange() {
           var x = document.getElementById("netProdMarketInput").value;
@@ -74,7 +95,7 @@ block content
           var y = document.getElementById("netProdBufferInput").value;
           document.getElementById("netProdMarket").innerHTML = x;
           document.getElementById("netProdBuffer").innerHTML = y;
-          document.getElementById("netRatio").innerHTML = x+"/"+y
+          //document.getElementById("netRatio").innerHTML = x+"/"+y
           }
 
           function netProdBufferChange() {
@@ -83,7 +104,7 @@ block content
           var y = document.getElementById("netProdMarketInput").value;
           document.getElementById("netProdMarket").innerHTML = y;
           document.getElementById("netProdBuffer").innerHTML = x;
-          document.getElementById("netRatio").innerHTML = y+"/"+x
+          //document.getElementById("netRatio").innerHTML = y+"/"+x
           }
 
           function buyFromMarketChange() {
@@ -92,7 +113,7 @@ block content
           var y = document.getElementById("takeFromBufferInput").value;
           document.getElementById("buyFromMarket").innerHTML = x;
           document.getElementById("takeFromBuffer").innerHTML = y;
-          document.getElementById("undRatio").innerHTML = x+"/"+y
+          //document.getElementById("undRatio").innerHTML = x+"/"+y
           }
 
           function takeFromBufferChange() {
@@ -101,15 +122,32 @@ block content
           var y = document.getElementById("buyFromMarketInput").value;
           document.getElementById("buyFromMarket").innerHTML = y;
           document.getElementById("takeFromBuffer").innerHTML = x;
-          document.getElementById("undRatio").innerHTML = y+"/"+x
+          //document.getElementById("undRatio").innerHTML = y+"/"+x
           }
 
+          var username = document.getElementById("username").innerHTML.split(">")[1].split("<")[0];
+          console.log(username);
+          console.log(typeof(username));
+
           setInterval(function(){
-            $.get( "./getAll", function( data ) {
+            $.get( "./getAll", function( data, status, xhr ) {
+              //console.log(data)
+              //console.log(status)
+              //console.log(xhr)
               document.getElementById("windSpeed").innerHTML = "Wind: " + "<strong>" + parseFloat(data.windSpeed).toFixed(3) + "</strong> m/s" ;
               dateStr = data.date.split("GMT")
               document.getElementById("date").innerHTML = "Data fetched: " + "<strong>" + dateStr[0] + "</strong>" ;
               document.getElementById("modelledElectricityPrice").innerHTML = "Electricity price on the market: " + "<strong>" + parseFloat(data.modelledElectricityPrice).toFixed(3) + " cent/kWH</strong>" ;
+            });
+            $.get( "./getProsumer", function(data) {
+               document.getElementById("production").innerHTML = "Production: " + "<strong>" + parseFloat(data.production).toFixed(3) + "</strong> kWH";
+               document.getElementById("consumption").innerHTML = "Consumption: " + "<strong>" + parseFloat(data.consumption).toFixed(3) + "</strong> kWH";
+               document.getElementById("netProduction").innerHTML = "Net production: " + "<strong>" + parseFloat(data.netProduction).toFixed(3) + "</strong> kWH";
+               document.getElementById("bufferCapacity").innerHTML = "Capacity in the buffer (max 180): " + "<strong>" + parseFloat(data.bufferBatteryCapacity).toFixed(3) + "</strong> kWH";
+               console.log(data.netProdToBufRatio)
+               document.getElementById("netProd").innerHTML = "Net production market/buffer ratio: " + "<strong>" + (100-parseFloat(data.netProdToBufRatio)) + "/" + parseFloat(data.netProdToBufRatio) + "</strong>";
+               document.getElementById("undProd").innerHTML = "Under production market/buffer ratio: " + "<strong>" + (100-parseFloat(data.undProdFromBufRatio)) + "/" + parseFloat(data.undProdFromBufRatio) + "</strong>";
+               //console.log(data);
             });
           }, 500);
 
