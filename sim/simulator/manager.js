@@ -10,16 +10,36 @@ class Manager {
         this.username = username;
         this.prosumers = prosumers; 
         this.consumers = consumers;
-        this.bufferBattery = new BufferBattery(this.username, 3700, 4500);
-        this.bufferBatteryCapacity = this.bufferBattery.getCapacity();
+        this.bufferBattery = new BufferBattery(this.username, config.managerBatteryStartCapacity, config.managerBatteryMaxCapacity);
+        this.bufferBatteryCapacity = config.managerBatteryStartCapacity;
         this.market = new Market(this.username, prosumers, consumers);
         this.powerPlantStatus = "Running";
         this.production = 0;
         this.electricityPrice = 0;
-        this.bufferRatio = 0.5;
-        this.marketRatio = 0.5;
+        this.bufferRatio = config.managerDefaultBufferRatio;
+        this.marketRatio = config.managerDefaultMarketRatio;
         this.prodToMarket = 0.0;
         this.blackoutList = [];
+    }
+
+    async init() {
+        await Managers.findOne({username: this.username}, function(error, manager) {
+            if(error) {
+                console.log(error);
+                return;
+            }
+            else {
+                this.production = manager.production; 
+                this.powerPlantStatus = manager.powerPlantStatus; 
+                this.electricityPrice = manager.electricityPrice;
+                this.marketRatio = manager.marketRatio;
+                this.bufferRatio = manager.bufferRatio;
+                this.bufferBatteryCapacity = manager.bufferBatteryCapacity;
+                this.bufferBattery = new BufferBattery(this.username, manager.bufferBatteryCapacity, config.managerBatteryMaxCapacity);
+                this.blackoutList = manager.blackoutList;
+                console.log("Initialized manager");
+            }
+        }.bind(this)).exec();
     }
 
     async update(prosumers, consumers) {
@@ -28,14 +48,14 @@ class Manager {
         if(this.powerPlantStatus == "Stopped" || this.powerPlantStatus == "Started") {
             this.production = 0;
         } else {
-            this.production = gaussian(config.powerplant_production, 5).ppf(Math.random()); 
+            this.production = gaussian(config.managerProductionAverageValue, config.managerProductionStdvValue).ppf(Math.random()); 
         }
         this.bufferBattery.setCapacity(this.production * this.bufferRatio);
         this.bufferBatteryCapacity = this.bufferBattery.getCapacity();
         this.prodToMarket = this.production * this.marketRatio;
 
         this.updateBlackoutList();
-
+        
         const updatedManager = await Managers.findOne({username: this.username});
         updatedManager.production = this.production;
         this.bufferRatio = updatedManager.bufferRatio/100;

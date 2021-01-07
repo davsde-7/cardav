@@ -16,7 +16,7 @@ block content
         br
         h7#bufferCapacity Capacity in the buffer:
         br
-        h7#modelledElectricityPrice Electricity price on the market:
+        h7#electricityPrice Electricity price on the market:
         br
         h7#netProd Net production market/buffer ratio:
         br
@@ -54,7 +54,7 @@ block content
             button#view.btn.btn-primary(name='underProduction' onclick="saveUnderProduction()") Update under-production!
           br
           br
-          a(href="http://130.240.200.34:3000/manager/") Contact the manager here!
+          a(href="http://130.240.200.34:3000/users/manager") Contact the manager here!
 
         script.
           function init() {
@@ -62,7 +62,7 @@ block content
               document.getElementById("windSpeed").innerHTML = "Wind: " + "<strong>" + parseFloat(data.windSpeed).toFixed(3) + "</strong> m/s" ;
               dateStr = data.date.split("GMT")
               document.getElementById("date").innerHTML = "Data fetched: " + "<strong>" + dateStr[0] + "</strong>" ;
-              document.getElementById("modelledElectricityPrice").innerHTML = "Electricity price on the market: " + "<strong>" + parseFloat(data.modelledElectricityPrice).toFixed(3) + " cent/kWH</strong>" ;
+              document.getElementById("electricityPrice").innerHTML = "Electricity price on the market: " + "<strong>" + parseFloat(data.electricityPrice).toFixed(3) + " cent/kWH</strong>" ;
             });
             $.get( "./getProsumer", function(data) {
                document.getElementById("production").innerHTML = "Production: " + "<strong>" + parseFloat(data.production).toFixed(3) + "</strong> kWH";
@@ -137,7 +137,7 @@ block content
               document.getElementById("windSpeed").innerHTML = "Wind: " + "<strong>" + parseFloat(data.windSpeed).toFixed(3) + "</strong> m/s" ;
               dateStr = data.date.split("GMT")
               document.getElementById("date").innerHTML = "Data fetched: " + "<strong>" + dateStr[0] + "</strong>" ;
-              document.getElementById("modelledElectricityPrice").innerHTML = "Electricity price on the market: " + "<strong>" + parseFloat(data.modelledElectricityPrice).toFixed(3) + " cent/kWH</strong>" ;
+              document.getElementById("electricityPrice").innerHTML = "Electricity price on the market: " + "<strong>" + parseFloat(data.electricityPrice).toFixed(3) + " cent/kWH</strong>" ;
             });
             $.get( "./getProsumer", function(data) {
                document.getElementById("production").innerHTML = "Production: " + "<strong>" + parseFloat(data.production).toFixed(3) + "</strong> kWH";

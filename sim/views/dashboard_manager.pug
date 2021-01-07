@@ -29,6 +29,8 @@ block content
         br
         h7#marketDemand Market demand: 
         br
+        h7#consumers Consumers in the system:
+        br
         h7#electricityPrice Electricity price on the market:
         br
         h7#modelledElectricityPrice Modelled electricity price: 
@@ -68,6 +70,7 @@ block content
               dateStr = data.date.split("GMT")
               document.getElementById("date").innerHTML = "Data fetched: " + "<strong>" + dateStr[0] + "</strong>" ;
               document.getElementById("modelledElectricityPrice").innerHTML = "Modelled electricity price: " + "<strong>" + parseFloat(data.modelledElectricityPrice).toFixed(3) + " </strong>cent/kWH" ;
+              document.getElementById("consumers").innerHTML = "Consumers in the system: " + "<strong>" + data.consumers + "</strong>" ;
             });
 
             $.get( "./getManagerData", function( data ) {
@@ -169,6 +172,7 @@ block content
               dateStr = data.date.split("GMT")
               document.getElementById("date").innerHTML = "Data fetched: " + "<strong>" + dateStr[0] + "</strong>" ;
               document.getElementById("modelledElectricityPrice").innerHTML = "Modelled electricity price: " + "<strong>" + parseFloat(data.modelledElectricityPrice).toFixed(3) + " </strong>cent/kWH";
+              document.getElementById("consumers").innerHTML = "Consumers in the system: " + "<strong>" + data.consumers + "</strong>" ;
             });
 
             $.get( "./getManagerData", function( data ) {

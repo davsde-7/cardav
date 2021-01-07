@@ -26,11 +26,12 @@ block content
                     });
                 }
                 window.onload = init;
+                
 
+                // The code for this table construction is borrow and altered, from GeeksforGeeks
                 function constructTable(selector, list) {                    
                     // Getting the all column names 
-                    var cols = Headers(list, selector);
-                    console.log("List length:", list.length)            
+                    var cols = Headers(list, selector);          
                     // Traversing the JSON data 
                     for (var i = 0; i < list.length; i++) { 
                         var row = $('<tr/>');    
@@ -42,7 +43,6 @@ block content
                             if (colIndex == 0) {
                                 val = '<a href=http://130.240.200.34:3000/users/'+val+'>' + val + '</a>';
                             }
-
                             if (typeof(val) == 'number') {
                                 val = val.toFixed(3)
                             }

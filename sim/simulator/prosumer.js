@@ -11,21 +11,48 @@ class Prosumer {
         this.consumption = 0.0; //how much the prosumer consumes
         this.netProduction = 0.0; //have to keep track if this value is < 0 or > 0
         this.marketDemand = 0.0; //the prosumer can have a demand for market electricity in case of empty battery and no wind(?)
-        this.bufferBattery = new BufferBattery(this.userName, 120, 180); //how much electricity that is stored
+        this.bufferBattery = new BufferBattery(this.username, config.prosumerBatteryStartCapacity, config.prosumerBatteryMaxCapacity); //how much electricity that is stored
         this.bufferBatteryCapacity = this.bufferBattery.getCapacity();
         this.blackout = false; //when the buffer battery is empty and the market/power plant cannot supply with enough electricity the prosumer gets a blackout
         this.blocked = false;
-        this.netProdToBufRatio = 0.5; //how much is sent to the buffer from the net production, rest is sold to market
-        this.undProdFromBufRatio = 0.5; //how much is taken from the buffer during under production, rest is bought from market
+        this.netProdToBufRatio = config.prosumerDefaultNetProdToBufRatio; //how much is sent to the buffer from the net production, rest is sold to market
+        this.undProdFromBufRatio = config.prosumerDefaultUndProdFromBufRatio; //how much is taken from the buffer during under production, rest is bought from market
         this.sellToMarket = 0.0;
         this.buyFromMarket = 0.0;
+        this.loggedin = false;
+        this.lastloggedin = null;
+    }
+
+    async init() {
+        await Prosumers.findOne({username: this.username}, function(error, prosumer) {
+            if(error) {
+                console.log(error);
+                return;
+            }
+            else {
+                this.production = prosumer.production; 
+                this.consumption = prosumer.production; 
+                this.netProduction = prosumer.netProduction; 
+                this.marketDemand = prosumer.marketDemand;
+                this.bufferBatteryCapacity = prosumer.bufferBatteryCapacity;
+                this.bufferBattery = new BufferBattery(this.username, prosumer.bufferBatteryCapacity, config.prosumerBatteryMaxCapacity); 
+                this.blackout = prosumer.blackout; 
+                this.blocked = prosumer.blocked;
+                this.netProdToBufRatio = prosumer.netProdToBufRatio;
+                this.undProdFromBufRatio = prosumer.undProdFromBufRatio; 
+                this.sellToMarket = prosumer.sellToMarket;
+                this.buyFromMarket = prosumer.buyFromMarket;
+                this.loggedin = prosumer.loggedin;
+                this.lastloggedin = prosumer.lastloggedin;
+            }
+        }.bind(this)).exec();
     }
 
     //function to update the values every hour of the simulation
     //https://www.energimarknadsbyran.se/el/dina-avtal-och-kostnader/elkostnader/elforbrukning/normal-elforbrukning-och-elkostnad-for-villa/
     async update(currentWind) {
-        this.production = currentWind * 0.6;
-        this.consumption = gaussian(2.283, 0.3*0.3).ppf(Math.random());
+        this.production = currentWind * config.prosumerProductionMultiplier;
+        this.consumption = gaussian(config.prosumerConsumptionAverageValue, config.prosumerConsumptionStdvValue).ppf(Math.random());
         this.netProduction = this.production - this.consumption;
 
         //decide on the marketDemand somehow
@@ -54,8 +81,7 @@ class Prosumer {
             this.bufferBattery.setCapacity(this.netProduction * this.netProdToBufRatio);
         }
 
-        this.bufferBatteryCapacity = this.bufferBattery.getCapacity();
-        
+        this.bufferBatteryCapacity = this.bufferBattery.getCapacity();        
 
         //update prosumer in database
         const updatedProsumer = await Prosumers.findOne({username: this.username});
@@ -70,16 +96,17 @@ class Prosumer {
         this.netProdToBufRatio = updatedProsumer.netProdToBufRatio/100; 
         this.undProdFromBufRatio = updatedProsumer.undProdFromBufRatio/100;
         updatedProsumer.bufferBatteryCapacity = this.bufferBatteryCapacity;
+        if (updatedProsumer.loggedin){
+            this.loggedin = true;
+            if(Date.now()-updatedProsumer.lastloggedin >= config.prosumerLastLoggedInTimer) {                
+                updatedProsumer.loggedin = false;
+                this.loggedin = false;
+            }
+        }
+        else {
+            this.loggedin = false;
+        }
         await updatedProsumer.save();
-    }
-
-    print() {
-        console.log("Username: " + this.username);
-        console.log("production: " + this.production);
-        console.log("consumption: " + this.consumption);
-        console.log("netProduction: " + this.netProduction);
-        console.log("marketDemand: " + this.marketDemand);
-        console.log("blackout: " + this.blackout + "\n");
     }
 
     setBlackout() {

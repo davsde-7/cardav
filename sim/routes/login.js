@@ -1,9 +1,10 @@
-const express = require('express')
-const bcryptjs = require('bcryptjs')
-const router = express.Router()
-const jwt = require('jsonwebtoken')
+const express = require('express');
+const bcryptjs = require('bcryptjs');
+const router = express.Router();
+const jwt = require('jsonwebtoken');
 
-let User = require('../schemas/userschema')
+const User = require('../schemas/userschema');
+const Prosumer = require('../schemas/prosumerschema');
 
 /* GET login page. */
 router.get('/', function(req, res) {
@@ -54,6 +55,16 @@ router.post('/', async function(req, res) {
             expiresIn: "10m"
           }
         )
+        user.lastloggedin = Date.now();
+        user.loggedin = true;
+        if(user.role == "prosumer") {
+          let prosumer = await Prosumer.findOne({username: user.username});
+          prosumer.lastloggedin = Date.now();
+          prosumer.loggedin = true;
+          prosumer.save();
+        }
+        await user.save();
+        
         if(user.role == "manager") {
           res.cookie('token', token, { httpOnly: true });
           res.redirect('/dashboard_manager/');

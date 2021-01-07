@@ -2,11 +2,10 @@ extends layout_loggedin
 
 block content
     div.mt-6
-        h5 Profile page
-
-        br
-        br
-        
+        if user.username == "manager" && userData.role!="manager"
+            h5 Manager contact page
+        else
+            h5 Profile page        
         style(type='text/css').
             #wrap {
             width:600px;
@@ -24,7 +23,6 @@ block content
         #wrap
         #left_col
             br
-            br
             h7 #[strong Username:] #{user.username}
             br
             h7 #[strong Email: ] #{user.email}
@@ -33,6 +31,10 @@ block content
             br
             h7 #[strong Role: ] #{user.role}
             br
+            if user.username == "manager"
+                h7 #[strong Phone number: ] 070 43 12 414
+                br
+                h7 #[strong Office hours: ] Mon-Fri, 8-17
             br
             if userData.role == "manager" && user.username!="manager"
                 h7 #[strong Block from selling to market]
@@ -43,6 +45,11 @@ block content
                 br
                 .col-sm-8(style="padding-left: 0")
                 button#view.btn.btn-primary(name='production' onclick="saveBlock()") Block
+                br
+                br
+                form(method='POST', action='/users/'+user.username+'/edit')
+                    .col-sm-8(style="padding-left: 0")
+                    button#view.btn.btn-primary(name='edit' type="submit") Edit user
 
         #right_col
             img(style="display: block;width: 50%;" src="../images/"+user.username+".png")
@@ -62,9 +69,13 @@ block content
                     }
 
                     function saveBlock() {
-                        var blocked = document.getElementById("block").value;
-                        blocked = parseFloat(blocked);
-                        $.post( "./"+window.location.pathname.split("/")[2]+"/saveBlock", {blocked: blocked});
+                        var timeBlock = document.getElementById("block").value;
+                        timeBlock = parseFloat(timeBlock);
+                        $.post( "./"+window.location.pathname.split("/")[2]+"/saveBlock", {timeBlock: timeBlock});
+                    }
+
+                    function edit() {
+                        $.get("./"+window.location.pathname.split("/")[2]+"/edit");
                     }
 
         

@@ -1,5 +1,5 @@
+const config = require('../sim_config.json')
 const gaussian = require('gaussian');
-var ObjectID = require('mongodb').ObjectID;
 const Consumers = require('../schemas/consumerschema');
 
 class Consumer {
@@ -14,7 +14,7 @@ class Consumer {
     async update() {
         //https://www.energimarknadsbyran.se/el/dina-avtal-och-kostnader/elkostnader/elforbrukning/normal-elforbrukning-och-elkostnad-for-villa/
         //check condition for blackout
-        this.consumption = gaussian(2.283, 0.3*0.3).ppf(Math.random());
+        this.consumption = gaussian(config.consumerConsumptionAverageValue, config.consumerConsumptionStdvValue).ppf(Math.random());
         this.marketDemand = this.consumption;
 
         try {
@@ -24,15 +24,12 @@ class Consumer {
         await updatedConsumer.save();
         }
         catch (error) {
-            console.log("INSIDE")
-            console.log(this)
+            console.log(error);
+            return;
         }
     }
 
     async addToDB() {
-        console.log("--------------------------------------")
-        console.log(this)
-        console.log("--------------------------------------")
         var exists = await Consumers.findOne({identification: this.identification});
         if (!exists) {
             let newConsumer = new Consumers({
@@ -49,19 +46,17 @@ class Consumer {
             }.bind(this));
         }
         else {
-            console.log("Consumer " + this.identification + " already in database.");
+            // console.log("Consumer " + this.identification + " already in database.");
         }          
     }
 
     async removefromDB() {
-        console.log("Inside removefromDB(), with object ");
-        console.log(this);
         try {
             await Consumers.deleteOne({identification: this.identification});
             console.log("Removed consumer " + this.identification + ".");
         }
         catch (error) {
-            console.log("failed to remove user")
+            console.log("Failed to remove consumer " + this.identification + ".");
             console.log(error);
         }
     }

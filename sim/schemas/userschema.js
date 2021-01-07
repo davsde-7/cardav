@@ -22,17 +22,17 @@ let userSchema = mongoose.Schema({
         required: true,
         default: 'prosumer'
     },
-    image:{
-        type: String,
-        required: true,
-        default: 'URL PATH TO DEFAULT PICTURE'
-    },
     creationdate:{
         type: Date,
         default: Date.now()
     },
     lastloggedin:{
         type: Date
+    },
+    loggedin:{
+        type: Boolean,
+        required: true,
+        default: 'false'
     }
 })
 

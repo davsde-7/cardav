@@ -76,6 +76,7 @@ class Simulator {
             this.consumerList[i].update();
         }
         this.manager.update(this.prosumerList, this.consumerList);
+        //this.prosumerList[0].bufferBatteryCapacity = 100;
     }
 
     newDay() {
@@ -107,7 +108,9 @@ class Simulator {
         return {
             "windSpeed": this.windSpeed.toString(),
             "date": this.date.toString(),
-            "modelledElectricityPrice": this.modelledElectricityPrice.toString()
+            "modelledElectricityPrice": this.modelledElectricityPrice.toString(),
+            "electricityPrice" : this.manager.electricityPrice.toString(),
+            "consumers" : this.consumerList.length.toString()
         };
     }
 
@@ -123,7 +126,8 @@ class Simulator {
                 "Market Demand":this.prosumerList[i].marketDemand,
                 "Current Capacity":this.prosumerList[i].bufferBatteryCapacity,
                 "Blackout":this.prosumerList[i].blackout,
-                "Blocked":this.prosumerList[i].blocked,        
+                "Blocked":this.prosumerList[i].blocked,
+                "Online":this.prosumerList[i].loggedin,   
             }
             tempProsumerList.push(user);
         }
@@ -132,6 +136,8 @@ class Simulator {
 
     addProsumer(username) {
         let newProsumer = new Prosumer(username);
+        newProsumer.init();
+        newProsumer.update(this.windSpeed);
         this.prosumerList.push(newProsumer);
     }
 
@@ -152,13 +158,19 @@ class Simulator {
                 console.log(error);
                 return;
             }
-            if (prosumers.length != this.prosumerList.length) {
-                for(var i = 0; i < this.prosumerList.length; i++) {
-                    delete this.prosumerList[i];
-                }
+            if(prosumers.length != this.prosumerList.length) {
                 this.prosumerList = []
-                for(var i = 0; i < prosumers.length; i++) {                   
+                for(var i = 0; i < prosumers.length; i++) {      
                     this.addProsumer(prosumers[i].username);
+                }
+            }
+            for(var j = 0; j < prosumers.length; j++) {
+                if(this.prosumerList[j].username != prosumers[j].username) {    
+                    this.prosumerList = []
+                    for(var k = 0; k < prosumers.length; k++) {      
+                        this.addProsumer(prosumers[k].username);
+                    }
+                    break;
                 }
             }
         }.bind(this)).exec();
@@ -166,22 +178,16 @@ class Simulator {
 
     async start() {
         this.windSpeed = gaussian(this.windSpeedDaily, config.stdev_hourly).ppf(Math.random())
-        /* const testProsumer = new Prosumer("testtest"); */
         
         await Prosumers.find(function(error, prosumers) {
             if(error) {
                 console.log(error);
                 return;
             }
-            //console.log("Database list of prosumers:" + prosumers + " length="+ prosumers.length + "\n");
             for(var i = 0; i < prosumers.length; i++) {
-                //console.log("Found prosumer: "+ prosumers[i].username + ", adding to list.");
                 this.addProsumer(prosumers[i].username);
-                //console.log("Successfully added: " + prosumers[i].username + " to the list. \n");
                 this.prosumerList[i].update(this.windSpeed);
             }
-            //console.log("Prosumerlist populated: ");
-            //console.log(this.prosumerList);
         }.bind(this)).exec();
 
         await Consumers.find(function(error, consumers) {
@@ -189,21 +195,19 @@ class Simulator {
                 console.log(error);
                 return;
             }
-            console.log(consumers.length)
             for(var i = 0; i < consumers.length; i++){
                 this.addConsumer(consumers[i].identification);
                 this.consumerList[i].update();
             }
             if(consumers.length == 0) {
                 console.log("Found no consumers, creating them.")
-                for(var i = 0; i < 10; i++) {
+                for(var i = 0; i < config.consumerStartCount; i++) {
                     console.log("Creating consumer " + (this.consumerList.length) + ".");
                     this.addConsumer();
                     this.consumerList[i].update();
                 }
             }
-            console.log("consumerlist populated:");
-            console.log(this.consumerList);
+            console.log("Consumerlist populated.");
         }.bind(this)).exec();
 
         await Managers.find(function(error, managers) {
@@ -211,8 +215,9 @@ class Simulator {
                 console.log(error);
                 return;
             }
-            if (managers.length>0) {
+            if (managers.length > 0) {
                 this.manager = new Manager(managers[0].username, this.consumerList, this.prosumerList)
+                this.manager.init();
             } 
             else {
                 User.find(function(error, users) {
@@ -241,17 +246,17 @@ class Simulator {
             prosumerCount ++;
             consumerCount ++;
 
-            if(prosumerCount == 10) {
+            if(prosumerCount == config.counterProsumers) {
                 this.checkProsumers();
                 prosumerCount = 0;
             }  
 
-            if (consumerCount == 24) {
+            if (consumerCount == config.counterConsumers) {
                 var randomChance = Math.floor(Math.random() * 100) + 1;
-                if (randomChance > 53) { //remove consumer
+                if (randomChance > config.consumerChanceToRemove) { //remove consumer
                     this.removeConsumer();
                 } 
-                else { //add consumer
+                else if (this.consumerList.length < config.consumerMaxCount){ //add consumer
                     this.addConsumer();
                 }
                 consumerCount = 0;
