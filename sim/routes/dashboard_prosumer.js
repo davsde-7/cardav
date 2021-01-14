@@ -4,14 +4,17 @@ const Prosumers = require('../schemas/prosumerschema')
 const checkAuth = require('./checkAuth');
 var router = express.Router();
 
-/* GET dashboard page. */
+/* GET prosumer dashboard page. */
 router.get('/', checkAuth, function(req, res, next) {
   res.render('dashboard_prosumer', {
     error:req.flash('error'), success:req.flash('success'), userData:req.userData
   });
 });
-// Test
 
+/* API request to get all data from simulator */
+router.get('/getAll', checkAuth, simulator.getAll);
+
+/* API database request to get manager data from the database */
 router.get('/getProsumer', checkAuth, async function(req, res) {
   await Prosumers.find({username:req.userData.username}, function(error, prosumers) {
     if(error) {
@@ -22,10 +25,7 @@ router.get('/getProsumer', checkAuth, async function(req, res) {
   }.bind(this)).exec();
 }) 
 
-router.get('/getWindSpeed', checkAuth, simulator.getWindSpeed);
-
-router.get('/getAll', checkAuth, simulator.getAll);
-
+/* API Post to save the net production ratio for the logged in prosumer */
 router.post('/saveNetProduction', checkAuth, async function(req,res) {
   await Prosumers.find({username:req.userData.username}, function(error, prosumers) {
     if(error) {
@@ -37,6 +37,7 @@ router.post('/saveNetProduction', checkAuth, async function(req,res) {
   });
 });
 
+/* API Post to save the under production ratio for the logged in prosumer */
 router.post('/saveUnderProduction', checkAuth, async function(req,res) {
   await Prosumers.find({username:req.userData.username}, function(error, prosumers) {
     if(error) {

@@ -72,7 +72,7 @@ class Market {
         for(var i = 0; i < this.consumers.length; i++) {
             this.marketDemand += this.consumers[i].getMarketDemand();
             
-            if (this.marketDemand > this.availableCapacity && this.consumers[i].bufferBatteryCapacity == 0) {
+            if (this.marketDemand > this.availableCapacity) {
                 this.consumers[i].blackout = true;
             }
         }
@@ -80,7 +80,7 @@ class Market {
         for(var i = 0; i < this.prosumers.length; i++) {
             this.marketDemand += this.prosumers[i].getMarketDemand();
 
-            if (this.marketDemand > this.availableCapacity && this.consumers[i].bufferBatteryCapacity == 0) {
+            if (this.marketDemand > this.availableCapacity && this.prosumers[i].bufferBatteryCapacity == 0) {
                 this.prosumers[i].blackout = true;
             }
         }

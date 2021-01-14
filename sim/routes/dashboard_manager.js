@@ -5,8 +5,9 @@ const Managers = require('../schemas/managerschema')
 const Markets = require('../schemas/marketschema')
 const router = express.Router();
 
-/* GET dashboard page. */
+/* GET manager dashboard page. */
 router.get('/', checkAuth, function(req, res, next) {
+  // If checkAuth was successfull, check if the user is a manager, otherwise redirect to prosumer dashboard.
   if (req.userData.role != "manager") {
     req.flash('error', 'Unauthorized access to manager dashboard');
     res.redirect('/dashboard_prosumer/');
@@ -16,12 +17,10 @@ router.get('/', checkAuth, function(req, res, next) {
   });
 });
 
-router.get('/getWindSpeed', simulator.getWindSpeed);
-
-router.get('/getDate', simulator.getDate);
-
+/* API request to get all data from simulator */
 router.get('/getAll', simulator.getAll);
 
+/* API database request to get manager data from the database */
 router.get('/getManagerData', async function(req, res) {
   await Managers.find(function(error, managers) {
     if(error) {
@@ -32,6 +31,7 @@ router.get('/getManagerData', async function(req, res) {
   }.bind(this)).exec();
 });
 
+/* API database request to get market data from the database */
 router.get('/getMarketData', async function (req, res) {
   await Markets.find(function(error, markets) {
     if(error) {
@@ -42,6 +42,7 @@ router.get('/getMarketData', async function (req, res) {
   }.bind(this)).exec();
 });
 
+/* API Post to save the set electricity price to the database and for prosumers */
 router.post('/saveElectricityPrice', async function(req,res) {
   await Managers.findOne(function(error, managers) {
     if(error) {
@@ -53,6 +54,7 @@ router.post('/saveElectricityPrice', async function(req,res) {
   });
 });
 
+/* API Post to save the market buffer ratio for the manager */
 router.post('/saveMarketBufferRatio', async function(req,res) {
   await Managers.findOne(function(error, managers) {
     if(error) {
@@ -68,6 +70,7 @@ router.post('/saveMarketBufferRatio', async function(req,res) {
   });
 });
 
+/* API Post change the status of the powerplant, "Running", "Starting" and "Stopped" */
 router.post('/savePowerPlantStatus', async function(req,res) {
   await Managers.findOne(function(error, managers) {
     if(error) {

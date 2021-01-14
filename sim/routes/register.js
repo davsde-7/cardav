@@ -10,27 +10,29 @@ router.get('/', function(req, res) {
   res.render('register');
 });
 
-// Register form
+/* Register form validation */
 router.post('/', async function(req, res) {
+  // Collect form data
   const username = req.body.username;
   const email = req.body.email;
   const password = req.body.password;
   const password2 = req.body.password2;
 
+  // Check requirements for the data in the forms
   req.checkBody('username', 'Username is required').notEmpty();
   req.checkBody('email', 'Email is required').notEmpty();
   req.checkBody('email', 'Email is not valid').isEmail();
   req.checkBody('password', 'Password is required').notEmpty();
   req.checkBody('password2', 'Passwords do not match').equals(req.body.password);
 
+  // If any errors found in form data, collect errors
   let errors = req.validationErrors();
   if (errors) {
     res.render('register', {
       errors:errors
     });
   } else {
-    // Error handling
-    // Check if email already registered
+    // No errors in form-data found, see if username/email already occupied
     let useremail = await User.findOne({email: req.body.email})
     if(useremail) {
       errors=[{msg: 'Email is already registered'}]
@@ -48,7 +50,7 @@ router.post('/', async function(req, res) {
       });
     }
     else {
-      // Fills the schematic with values from the form
+      // Fills the schematic with the data from the form
       let newUser = new User({
         username:username,
         email:email,
@@ -59,7 +61,7 @@ router.post('/', async function(req, res) {
         username:username,
       })
 
-      // Hashes password and creates the user and saves it to the database
+      // Hashes password and creates a user and prosumer and saves it to the database
       bcryptjs.genSalt(10, function(error, salt) {
         bcryptjs.hash(newUser.password, salt, function(error, hash) {
           if(error){

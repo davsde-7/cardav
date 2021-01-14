@@ -14,17 +14,21 @@ router.get('/', checkAuth, function(req, res) {
 
 /* GET single user */
 router.get('/:username', checkAuth, function(req, res) {
+  // Search database for user with url username
   Users.findOne({username:req.params.username}, function(err, user){
     if(err) {
+      // Some kind of error happened
       console.log(err)
       res.redirect('/users')
     }
     if(user) {
+      // User with :username found, render the profile page for that user
       res.render('users', {
         user:user, userData:req.userData, error:req.flash('error'), success:req.flash('success'),
       });
     }
     else{
+      // Found no :username in database, redirect back to logged in users profile page
       console.log("Found no user")
       req.flash('error', 'Could not find a user with that username');
       res.redirect('/');
@@ -36,7 +40,6 @@ router.get('/:username', checkAuth, function(req, res) {
 router.post('/:username/upload', upload.single('image'), function(req, res, next) {
   var tmp_path = req.file.path;
   var target_path = 'public/images/' + req.params.username + ".png";
-
   var src = fs.createReadStream(tmp_path);
   var dest = fs.createWriteStream(target_path);
   src.pipe(dest);
@@ -52,23 +55,30 @@ router.post('/:username/upload', upload.single('image'), function(req, res, next
   });
 });
 
-
+/* API Post to block the user x amount of seconds*/
 router.post('/:username/saveBlock', checkAuth, async function(req,res) {
+  // Make sure that a manager is doing it, otherwise it's unauthorized access.
+  if (req.userData.role != "manager") {
+    req.flash('error', 'Unauthorized access to block user');
+    res.redirect('/dashboard_prosumer/');
+  }
   await Prosumers.find({username:req.params.username}, function(error, prosumers) {
     if(error) {
       console.log(error);
       return;
-    }     
-    console.log("TEST TEST TEST")
-    console.log(req.body.timeBlock)
+    }
     prosumers[0].blocked = true;
     prosumers[0].save();
-    req.flash('success', 'Blocked user')
-    res.redirect('/users/'+req.params.username);
+    setTimeout( function(){
+      prosumers[0].blocked = false;
+      prosumers[0].save();
+    }, req.body.timeBlock*1000);
   });
 });
 
+/* GET user/profile edit page*/
 router.post('/:username/edit', checkAuth, async function(req,res) {
+  // Make sure that a manager is doing it, otherwise it's unauthorized access.
   if (req.userData.role != "manager") {
     req.flash('error', 'Unauthorized access to edit user');
     res.redirect('/');
@@ -93,6 +103,7 @@ router.post('/:username/edit', checkAuth, async function(req,res) {
   }
 });
 
+/* API Post to update the user with new data*/
 router.post('/:username/edit/update', checkAuth, async function(req,res) {
   if (req.userData.role != "manager") {
     req.flash('error', 'Unauthorized access to edit user');
@@ -121,6 +132,8 @@ router.post('/:username/edit/update', checkAuth, async function(req,res) {
         }
       });
       user.save();
+      // After updating the user there's a risk that the username has been changed
+      // so you also need to change the profile page image so it matches the new username
       var target_path = 'public/images/' + req.params.username + ".png";
       var new_target_path = 'public/images/' + req.body.username + ".png";
       fs.rename(target_path, new_target_path, function (err) {
@@ -140,6 +153,7 @@ router.post('/:username/edit/update', checkAuth, async function(req,res) {
   });
 });
 
+/* API Post to delete the user*/
 router.post('/:username/edit/delete', checkAuth, async function(req,res) {
   if (req.userData.role != "manager") {
     req.flash('error', 'Unauthorized access to delete user');

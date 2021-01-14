@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const homeAuth = require('./homeAuth');
 
-/* GET home page. */
+/* GET home/index page. */
 router.get('/', homeAuth, function(req, res) {
   res.render('index', {
     error:req.flash('error'), success:req.flash('success'), userData:req.userData

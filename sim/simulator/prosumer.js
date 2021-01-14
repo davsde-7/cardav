@@ -23,6 +23,7 @@ class Prosumer {
         this.lastloggedin = null;
     }
 
+    /* init() fetches the saved data from the database and updates the Prosumers data*/
     async init() {
         await Prosumers.findOne({username: this.username}, function(error, prosumer) {
             if(error) {
@@ -48,7 +49,7 @@ class Prosumer {
         }.bind(this)).exec();
     }
 
-    //function to update the values every hour of the simulation
+    /* update(x) is a function to update all the relevant data according to a new windspeed */
     //https://www.energimarknadsbyran.se/el/dina-avtal-och-kostnader/elkostnader/elforbrukning/normal-elforbrukning-och-elkostnad-for-villa/
     async update(currentWind) {
         this.production = currentWind * config.prosumerProductionMultiplier;
@@ -109,34 +110,42 @@ class Prosumer {
         await updatedProsumer.save();
     }
 
+    /* setBlackout() sets the Prosumer to have a blackout */
     setBlackout() {
         this.blackout = true;
     }
 
+    /* resetBlackout() sets the Prosumer to not have a blackout */
     resetBlackout() {
         this.blackout = false;
     }
 
+    /* getProduction() returns the current production of Prosumer */
     getProduction() {
         return this.production;
     }
 
+    /* getConsumption() returns the current consumption of Prosumer */
     getConsumption() {
         return this.consumption;
     }
 
+    /* getNetProduction() returns the current net production of Prosumer */
     getNetProduction() {
         return this.netProduction;
     }
 
+    /* getMarketDemand() returns the current market demand of Prosumer */
     getMarketDemand() {
         return this.marketDemand;
     }
 
+    /* getSellToMarket() returns the current sell to market ratio of Prosumer */
     getSellToMarket() {
         return this.sellToMarket;
     }
 
+    /* getBuyFromMarket() returns the current buy from market ratio of Prosumer */
     getBuyFromMarket() {
         return this.buyFromMarket;
     }

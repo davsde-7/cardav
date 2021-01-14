@@ -4,12 +4,9 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
-const jwt = require('jsonwebtoken');
 const expressValidator = require('express-validator');
 const session = require('express-session');
 const flash = require('connect-flash');
-const multer = require('multer');
-
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -19,7 +16,6 @@ const dashboardProsumerRouter = require('./routes/dashboard_prosumer')
 const dashBoardManagerRouter = require('./routes/dashboard_manager')
 const prosumersRouter = require('./routes/prosumers');
 const logoutRouter = require('./routes/logout');
-const managerRouter = require('./routes/manager');
 const app = express();
 
 
@@ -30,36 +26,29 @@ let db = mongoose.connection
 db.on('error', (error) => console.error(error));
 db.once('open', () => console.log("Connected to database"));
 
-// view engine setup
+// View engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
+// Bodyparser setup for getting data from forms etc.
 app.use(logger('dev'));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
-//multer config
-const multerStorage = multer.diskStorage({
-  destination: function(req, file, cb) {
-    cb(null, '/public/images');
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.fieldname);
-  }
-});
-
 // Setup middleware epxressValidator
 app.use(expressValidator());
 
-// use flash for error handling
+// Setup flash for easy method of showing messages on frontend
 app.use(flash());
 
+// Setup for cookies, json format, session and a static path to the public dir
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({secret: 'test', resave: true, saveUninitialized: true}));
 
+// Setup for routes and their URLs
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/register', registerRouter);
@@ -68,7 +57,6 @@ app.use('/dashboard_prosumer', dashboardProsumerRouter);
 app.use('/dashboard_manager', dashBoardManagerRouter);
 app.use('/prosumers', prosumersRouter);
 app.use('/logout', logoutRouter);
-app.use('/manager', managerRouter);
   
 // Code for preventing CORS errors
 app.use((req, res, next) => {
@@ -82,18 +70,18 @@ app.use((req, res, next) => {
 })
  
 
-// catch 404 and forward to error handler
+// Catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
 });
 
-// error handler
+// Error handler
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
+  // Set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
+  // Render the error page
   res.status(err.status || 500);
   res.render('error');
 });

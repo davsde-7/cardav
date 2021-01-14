@@ -41,10 +41,10 @@ block content
                 br
                 label(for='block') Block: 
                 input#block(type='range' min='10' max='100' value='50' step='10' onchange='blockChange()')
-                output#blockoutput 50
+                output#blockoutput 50 seconds
                 br
                 .col-sm-8(style="padding-left: 0")
-                button#view.btn.btn-primary(name='production' onclick="saveBlock()") Block
+                button#blockbutton.btn.btn-primary(name='blockbutton' onclick="saveBlock()") Block
                 br
                 br
                 form(method='POST', action='/users/'+user.username+'/edit')
@@ -65,13 +65,17 @@ block content
                 script.
                     function blockChange() {
                         var x = document.getElementById("block").value;
-                        document.getElementById("blockoutput").value = x;
+                        document.getElementById("blockoutput").value = x + " seconds";
                     }
 
                     function saveBlock() {
                         var timeBlock = document.getElementById("block").value;
                         timeBlock = parseFloat(timeBlock);
                         $.post( "./"+window.location.pathname.split("/")[2]+"/saveBlock", {timeBlock: timeBlock});
+                        document.getElementById("blockbutton").disabled = true;
+                        setTimeout( function(){
+                            document.getElementById("blockbutton").disabled = false;
+                        }, timeBlock*1000);
                     }
 
                     function edit() {

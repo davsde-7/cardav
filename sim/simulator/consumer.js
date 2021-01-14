@@ -7,7 +7,7 @@ class Consumer {
         this.identification = identification;
         this.consumption = 0.0;
         this.marketDemand = 0.0;
-        this.blackout = false; //should the consumer also be in the risk of having blackouts?
+        this.blackout = false;
     }
 
     //function to update the values every hour of the simulation
@@ -16,17 +16,21 @@ class Consumer {
         //check condition for blackout
         this.consumption = gaussian(config.consumerConsumptionAverageValue, config.consumerConsumptionStdvValue).ppf(Math.random());
         this.marketDemand = this.consumption;
+        
 
-        try {
-        var updatedConsumer = await Consumers.findOne({identification: this.identification});
-        updatedConsumer.marketDemand = this.marketDemand;
-        updatedConsumer.blackout = this.blackout;
-        await updatedConsumer.save();
-        }
-        catch (error) {
-            console.log(error);
-            return;
-        }
+        await Consumers.findOne({identification: this.identification}, function(err, consumer){
+            if(err) {
+              console.log(err)
+            }
+            if(consumer) {
+              consumer.marketDemand = this.marketDemand;
+              consumer.blackout = this.blackout;
+              consumer.save();
+            }
+            else{
+              console.log("Something went wrong trying to find consumer with id: " + this.identification);
+            }
+          }.bind(this));
     }
 
     async addToDB() {
@@ -46,7 +50,6 @@ class Consumer {
             }.bind(this));
         }
         else {
-            // console.log("Consumer " + this.identification + " already in database.");
         }          
     }
 
