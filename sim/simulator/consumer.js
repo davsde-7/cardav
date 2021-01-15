@@ -10,14 +10,14 @@ class Consumer {
         this.blackout = false;
     }
 
-    //function to update the values every hour of the simulation
+    /* update(x) is a function to update all the relevant data */
     async update() {
+        //source for average consumption:
         //https://www.energimarknadsbyran.se/el/dina-avtal-och-kostnader/elkostnader/elforbrukning/normal-elforbrukning-och-elkostnad-for-villa/
-        //check condition for blackout
         this.consumption = gaussian(config.consumerConsumptionAverageValue, config.consumerConsumptionStdvValue).ppf(Math.random());
         this.marketDemand = this.consumption;
         
-
+        //update consumer in database
         await Consumers.findOne({identification: this.identification}, function(err, consumer){
             if(err) {
               console.log(err)
@@ -33,6 +33,7 @@ class Consumer {
           }.bind(this));
     }
 
+    /*addToDB() adds the consumer to the database and saves it*/
     async addToDB() {
         var exists = await Consumers.findOne({identification: this.identification});
         if (!exists) {
@@ -53,6 +54,7 @@ class Consumer {
         }          
     }
 
+    /*removefromDB() removes the consumer from the db*/
     async removefromDB() {
         try {
             await Consumers.deleteOne({identification: this.identification});
@@ -64,18 +66,22 @@ class Consumer {
         }
     }
 
+    /*setBlackout() sets the blackout to true*/
     setBlackout() {
         this.blackout = true;
     }
 
+    /*resetBlackout() sets the blackout to false*/
     resetBlackout() {
         this.blackout = false;
     }
 
+    /*getConsumption() returns the current consumption of the consumer*/
     getConsumption() {
         return this.consumption;
     }
 
+    /*getMarketDemand() returns the current market demand of the consumer*/
     getMarketDemand() {
         return this.marketDemand;
     }

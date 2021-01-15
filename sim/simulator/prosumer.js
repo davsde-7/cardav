@@ -6,17 +6,17 @@ const Prosumers = require('../schemas/prosumerschema');
 
 class Prosumer {
     constructor(username){
-        this.username = username; //used for login
-        this.production = 0.0; //how much the prosumer produces
-        this.consumption = 0.0; //how much the prosumer consumes
-        this.netProduction = 0.0; //have to keep track if this value is < 0 or > 0
-        this.marketDemand = 0.0; //the prosumer can have a demand for market electricity in case of empty battery and no wind(?)
-        this.bufferBattery = new BufferBattery(this.username, config.prosumerBatteryStartCapacity, config.prosumerBatteryMaxCapacity); //how much electricity that is stored
+        this.username = username; 
+        this.production = 0.0; 
+        this.consumption = 0.0; 
+        this.netProduction = 0.0; 
+        this.marketDemand = 0.0; 
+        this.bufferBattery = new BufferBattery(this.username, config.prosumerBatteryStartCapacity, config.prosumerBatteryMaxCapacity); 
         this.bufferBatteryCapacity = this.bufferBattery.getCapacity();
-        this.blackout = false; //when the buffer battery is empty and the market/power plant cannot supply with enough electricity the prosumer gets a blackout
+        this.blackout = false; 
         this.blocked = false;
-        this.netProdToBufRatio = config.prosumerDefaultNetProdToBufRatio; //how much is sent to the buffer from the net production, rest is sold to market
-        this.undProdFromBufRatio = config.prosumerDefaultUndProdFromBufRatio; //how much is taken from the buffer during under production, rest is bought from market
+        this.netProdToBufRatio = config.prosumerDefaultNetProdToBufRatio; 
+        this.undProdFromBufRatio = config.prosumerDefaultUndProdFromBufRatio; 
         this.sellToMarket = 0.0;
         this.buyFromMarket = 0.0;
         this.loggedin = false;
@@ -50,21 +50,21 @@ class Prosumer {
     }
 
     /* update(x) is a function to update all the relevant data according to a new windspeed */
+    //source for average household consumption:
     //https://www.energimarknadsbyran.se/el/dina-avtal-och-kostnader/elkostnader/elforbrukning/normal-elforbrukning-och-elkostnad-for-villa/
     async update(currentWind) {
         this.production = currentWind * config.prosumerProductionMultiplier;
         this.consumption = gaussian(config.prosumerConsumptionAverageValue, config.prosumerConsumptionStdvValue).ppf(Math.random());
         this.netProduction = this.production - this.consumption;
 
-        //decide on the marketDemand somehow
         if (this.netProduction < 0) {
-            //this.marketDemand = Math.abs(this.netProduction);
 
             this.buyFromMarket = Math.abs(this.netProduction) * (1.0 - this.undProdFromBufRatio);
             this.marketDemand = this.buyFromMarket;
 
             this.bufferBattery.setCapacity(this.netProduction * this.undProdFromBufRatio);
 
+            //check for blackout
             if (this.bufferBattery.getCapacity() == 0.0) {
                 this.blackout = true;
             } else {
@@ -74,6 +74,7 @@ class Prosumer {
         } else {
             this.marketDemand = 0.0;
 
+            //if blocked the prosumer can't sell to market
             if (this.blocked == true) {
                 this.sellToMarket = 0.0;
             } else {
@@ -97,6 +98,8 @@ class Prosumer {
         this.netProdToBufRatio = updatedProsumer.netProdToBufRatio/100; 
         this.undProdFromBufRatio = updatedProsumer.undProdFromBufRatio/100;
         updatedProsumer.bufferBatteryCapacity = this.bufferBatteryCapacity;
+        
+        //checked logged in status
         if (updatedProsumer.loggedin){
             this.loggedin = true;
             if(Date.now()-updatedProsumer.lastloggedin >= config.prosumerLastLoggedInTimer) {                

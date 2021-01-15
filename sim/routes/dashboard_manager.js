@@ -31,7 +31,7 @@ router.get('/getManagerData', async function(req, res) {
   }.bind(this)).exec();
 });
 
-/* API database request to get market data from the database */
+/* API Get database request to get market data from the database */
 router.get('/getMarketData', async function (req, res) {
   await Markets.find(function(error, markets) {
     if(error) {

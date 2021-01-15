@@ -25,16 +25,6 @@ class Simulator {
         this.manager = null;
     }
 
-    getConsumption() { //Abstract function for now, WIP
-        for (c in consumerList) {
-            this.totalConsumption += c.getConsumption();
-        }
-        for (p in prosumerList) {
-            this.totalConsumption += p.getConsumption();
-        }
-        return this.totalConsumption;
-    }
-
     /* updateModelledElectricityPrice() updates the modelled electricity price with a math formula */
     updateModelledElectricityPrice() {
         //https://www.energimarknadsbyran.se/el/dina-avtal-och-kostnader/elkostnader/elforbrukning/normal-elforbrukning-och-elkostnad-for-villa/
@@ -47,7 +37,7 @@ class Simulator {
         return this.windSpeedHourly ;
     }
 
-    /* getWindDaily() returns the dailyu windspeed and prints it */
+    /* getWindDaily() returns the daily windspeed and prints it */
     getWindDaily() {
         console.log("Daily windspeed : ", this.windSpeedDaily);
         return this.windSpeedDaily;

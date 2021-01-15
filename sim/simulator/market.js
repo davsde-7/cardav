@@ -4,12 +4,13 @@ class Market {
     constructor(manager, prosumers, consumers) {
         this.manager = manager;
         this.marketPrice = 0;
-        this.availableCapacity = 0; //how much market electricity is available right now
-        this.prosumers = prosumers; //should the market keep a string of all the prosumers?
-        this.consumers = consumers; //should the powerplant keep a string of all the consumers?
+        this.availableCapacity = 0; 
+        this.prosumers = prosumers; 
+        this.consumers = consumers; 
         this.marketDemand = 0; //the sum of all households demand for market electricity
     }
 
+    /*update(x) updates the market according to the data from the prosumers and consumers*/ 
     async update(prosumers, consumers, marketPrice, prodToMarket) {
         this.prosumers = prosumers;
         this.consumers = consumers;
@@ -24,7 +25,7 @@ class Market {
         await updatedMarket.save();
     }
 
-
+    /*createMarket() creates a market and saves it to the database*/
     async createMarket() {
         let newMarket = new Markets ({
             manager: this.manager,
@@ -42,15 +43,10 @@ class Market {
         });
     }
 
-    /*updateMarketPrice(newPrice) {
-        //add checks on the current consumption, the current battery buffer of the power plant etc and set the price accordingly
-        this.marketPrice = newPrice;
-    }*/
-
+    /*updateAvailableCapacity(x) updates the available market capacity according to the production/consumption from prosumers/consumers*/
     updateAvailableCapacity(prodToMarket) {
-        //check how much market electricity is available and increase/decrease the value if a household sell or buy from the market
         
-        //the available market capacity is affected by how much the prosumers sell and buy (market demand)
+        //the available market capacity is affected by how much the prosumers sell and buy
         for(var i = 0; i < this.prosumers.length; i++) {
             this.availableCapacity += this.prosumers[i].getSellToMarket() - this.prosumers[i].getBuyFromMarket();
         }
@@ -65,13 +61,14 @@ class Market {
         
     }
 
+    /*updateCurrentMarketDemand() updates the current demand for electricity from the market based on the demand from consumers and prosumers*/
     updateCurrentMarketDemand() {
-        //calculate the current demand for electricity from the market based on the demand from consumers and prosumers
         this.marketDemand = 0;
 
         for(var i = 0; i < this.consumers.length; i++) {
             this.marketDemand += this.consumers[i].getMarketDemand();
             
+            //check if there is enough capacity for the consumers demand, if not issue a blackout
             if (this.marketDemand > this.availableCapacity) {
                 this.consumers[i].blackout = true;
             }
@@ -80,20 +77,24 @@ class Market {
         for(var i = 0; i < this.prosumers.length; i++) {
             this.marketDemand += this.prosumers[i].getMarketDemand();
 
+            //check if there is enough capacity for the prosumers demand, if not issue a blackout if their battery is empty as well
             if (this.marketDemand > this.availableCapacity && this.prosumers[i].bufferBatteryCapacity == 0) {
                 this.prosumers[i].blackout = true;
             }
         }
     }
 
+    /*getMarketPrice() returns the current market price*/
     getMarketPrice() {
         return this.marketPrice;
     }
 
+    /*getAvailableCapacity() returns the current available capacity of the market*/
     getAvailableCapacity() {
         return this.availableCapacity;
     }
 
+    /*getMarketDemand() returns the current market demand*/
     getMarketDemand() {
         return this.marketDemand;
     }

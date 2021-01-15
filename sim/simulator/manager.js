@@ -22,6 +22,7 @@ class Manager {
         this.blackoutList = [];
     }
 
+    /* init() fetches the saved data from the database and updates the managers data*/
     async init() {
         await Managers.findOne({username: this.username}, function(error, manager) {
             if(error) {
@@ -42,9 +43,12 @@ class Manager {
         }.bind(this)).exec();
     }
 
+    /* update(x) is a function to update all the relevant data according to the current prosumers and consumers in the system */
     async update(prosumers, consumers) {
         this.prosumers = prosumers;
         this.consumers = consumers;
+
+        //if the powerplant is stopped or started the production is 0
         if(this.powerPlantStatus == "Stopped" || this.powerPlantStatus == "Started") {
             this.production = 0;
         } else {
@@ -56,6 +60,7 @@ class Manager {
 
         this.updateBlackoutList();
         
+        //update manager in database and in simulation
         const updatedManager = await Managers.findOne({username: this.username});
         updatedManager.production = this.production;
         this.bufferRatio = updatedManager.bufferRatio/100;
@@ -69,17 +74,12 @@ class Manager {
         this.market.update(this.prosumers, this.consumers, this.electricityPrice, this.prodToMarket);
     }
 
+    /*updateMarketPrice(x) updates the current marketprice*/
     updateMarketPrice(newPrice) {
-        //do checks if the price is too high or too low compared to the electricitypricemodel?
-        //the manager can redirect the prosumers to sell to the market by momentarily increasing the market price
         this.market.updateMarketPrice(newPrice);
     }
 
-    print() {
-        console.log("\n")
-        console.log(this)
-    }
-
+    /*createManager() creates a manager and saves it to the database*/
     async createManager() {
         let newManager = new Managers ({
             username: this.username,
@@ -97,14 +97,17 @@ class Manager {
         });
     }
 
+    /*updatePowerPlantStatus(x) updates the status of the powerplant between "Stopped", "Started", and "Running"*/
     updatePowerPlantStatus(status) {
         this.powerPlantStatus = status;
     }
 
+    /*getProdToMarket() returns the power plants production to market*/
     getProdToMarket() {
         return this.prodToMarket;
     }
 
+    /*updateBlackoutList() checks condition for blackout and updates the blackoutlist*/
     updateBlackoutList(){
         this.blackoutList = [];
         for(var i = 0; i < this.prosumers.length; i++) {

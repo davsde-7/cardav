@@ -7,6 +7,7 @@ class BufferBattery {
         this.minCapacity = 0;
     }
 
+    /*setCapacity(x) sets the current capacity in the battery*/
     setCapacity(capacity) {
         if (this.currentCapacity + capacity > this.maxCapacity) {
             this.currentCapacity = this.maxCapacity;
@@ -17,6 +18,7 @@ class BufferBattery {
         }
     }
 
+    /*getCapacity() returns the current capacity in the battery*/
     getCapacity() {
         return this.currentCapacity;
     }
