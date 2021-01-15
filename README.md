@@ -30,7 +30,7 @@ cd cardav/sim
 ```bash
 npm install
 ```
-4. Edit 'app.js' to connect to your MongoDB db. Swap out the green text on line 24, in our example that would be 'mongodb://localhost/m7011e'
+4. Edit 'app.js' to connect to your MongoDB db. Swap out the string on line 24, in our example that would be 'mongodb://localhost/m7011e'
 ```javascript
 mongoose.connect('mongodb://localhost/m7011e', {useNewUrlParser:  true, useUnifiedTopology:  true, useCreateIndex:true});
 ```
