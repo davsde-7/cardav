@@ -1,11 +1,23 @@
-# cardav
-M7011E Project
 
-# Deployment protocol / installation guide
-### Requirements 
+# cardav
+This is a project for the LTU course M7011E - _Design of Dynamic Web Systems_.
+
+## Authors
+Group: Group 0
+
+    Caroline Kero - carker-7@student.ltu.se - carker-7
+    David Söderberg - davsde-7@student.ltu.se - davsde-7
+
+Note: Due to both of us working on the project from the same command line we did not switch between users when pushing the changes. Therefore the contribution stats is not an accurate representation of who did what.
+
+## License
+[Licensed](https://github.com/davsde-7/cardav/blob/master/LICENSE) under MIT.
+
+## Deployment protocol / installation guide
+#### Requirements 
 You need to have NodeJs and npm installed on your system. Find out how you install it [here](https://www.npmjs.com/get-npm).
 Another requirement is [MongoDB](https://docs.mongodb.com/manual/administration/install-community/).
-### Installing and running the project
+#### Installing and running the project
 1. Start with cloning the repo
 ```bash
 git clone https://github.com/davsde-7/cardav.git
@@ -37,7 +49,7 @@ To change the port that the web application is running in you need to edit the f
 ```js
 var  port = normalizePort(process.env.PORT || '3000');
 ```
-### Configuring the web application
+#### Configuring the web application
 
 If it is your first time running the system you will not have a manager. You can get a manager by first registering a user and changing it's role from 'prosumer' to 'manager'.
 From MongoDBs command line it looks like this
